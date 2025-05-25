@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <!-- <link rel="stylesheet" type="text/css" href="{% static 'logistic/css/home_style.css' %}"> -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Play&display=swap"
+    rel="stylesheet">
+    <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- <title>HOW GUNICORN WORKS</title> -->
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 20px;
+            text-align: left;
+            font-size: 0.8em;
+        }
+        .container {
+            width: 100%;
+            max-width: 1000px; /* Adjust as needed to control width */
+            margin: 0 auto; /* Align to the left */
+            padding: 10px;
+            background-color: white; /* Light gray or any color that looks like a border */
+            box-sizing: border-box;
+        }
+        h1 {
+            font-size: 1.2em;
+            color: black;
+            text-decoration: underline;
+        }
+        h2 {
+            font-size: 1.3em;
+            color: black;
+            margin-top: 1.6em;
+        }
+        h3 {
+            font-size: 1em;
+            /* color: black; */
+            text-decoration: underline;
+        }
+        h4 {
+            font-size: 1em;
+            /* color: black; */
+            text-decoration: underline;
+            font-weight: normal;
+        }
+        p {
+            margin-bottom: 1em;
+        }
+        ul {
+            list-style-type: disc;
+            margin-left: -10px;
+            margin-bottom: 1.5em;
+        }
+        ul ul {
+            list-style-type: circle;
+            margin-left: -18px;
+            margin-bottom: 1.0em;
+            margin-top: 0.8em;
+        }
+        ul ul ul {
+            list-style-type: square;
+            margin-left: -20px;
+            margin-bottom: 1em;
+        }
+        b {
+            font-weight: bold;
+        }
+        .code-block1 {
+            /* background-color: #f0f0f0; Light grey, similar to box color */
+            /* border: 1px solid #ccc; */
+            /* padding: 1px; */
+            /* margin: 0.1em 0; */
+            margin-left: -30px;
+            font-family: monospace;
+            white-space: pre-wrap; /* Ensures text wraps */
+            word-wrap: break-word; /* Ensures long words break */
+            font-size: 12px;
+            /* box-sizing: border-box; Include padding and border in the element's total width and height */
+        }
+        .code-block {
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            padding: 4px 8px;
+            margin: 0.5em 0;
+            font-family: monospace;
+            white-space: pre-wrap;     /* Allow wrapping of pre-formatted text */
+            word-break: break-all;     /* Break long words */
+            overflow-x: auto;          /* Add horizontal scroll if needed */
+            box-sizing: border-box;
+            font-size: 12px;
+            margin-bottom: 30px;
+            margin-top: 25px;
+        }
+        pre {
+            margin-top: -2em;
+            margin-bottom: -2em;
+            margin-left: -8em;
+        }
+        .milestone {
+            border: 2px solid; /* Dark blue border */
+            background-color: floralwhite; /* Light blue background */
+            padding: 15px;
+            margin: 3em 0;
+            /* font-weight: bold; */
+            font-family: monospace;
+            font-size: 13px;
+        }
+        .footer{
+                margin-top: 20%;
+                background:whitesmoke;
+                padding:30px 0px;
+                font-family: 'Play', sans-serif;
+                text-align:center;
+        }
+
+                .footer .row{
+
+                width:100%;
+                margin:1% 0%;
+                padding:0.6% 0%;
+                color:gray;
+                font-size:0.8em;
+
+                }
+
+                .footer .row a{
+
+                text-decoration:none;
+                /* color:gray; */
+                transition:0.5s;
+
+                }
+
+                .footer .row a:hover{
+
+                /* color:#fff; */
+
+                }
+
+                .footer .row ul{
+
+                width:100%;
+
+                }
+
+                .footer .row ul li{
+
+                display:inline-block;
+                margin:0px 30px;
+
+                }
+
+                .footer .row a i{
+
+                font-size:2em;
+                margin:0% 1%;
+
+                }
+
+                @media (max-width:1200px){
+
+                .footer{
+
+                text-align:left;
+                padding:5%;
+
+                }
+                .footer .row ul li{
+
+                display:block;
+                margin:10px 0px;
+                text-align:left;
+
+                }
+
+                .footer .row a i{
+
+                margin:0% 3%;
+                }
+
+                }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><u>HOW GUNICORN WORKS</u></h1>
+        <p style="color: gray;">May 24, 2025</p>
+
+        <h2>Introduction</h2>
+        <p>This document explores common software design components found in professional software
+           products by providing a technical case study of how Gunicorn server works.
+           Modern software systems are typically built on foundational systems,
+           including but not limited to: Command Line Interface - CLI, Configuration files, Architectural designs,
+           Application Programming Interfaces - APIs, and System state management.
+        <p></p>
+           Our goal is to guide the reader through these componets as implemented in Gunicorn, using
+           references from software documentations, the Gunicorn source
+           code hosted on <a href="https://github.com/benoitc/gunicorn">Github</a>, and other
+           relevant material. For each component, we examine design choices, key data structures
+           and methods or functions. We trace the Gunicorn server application from the command
+           executed by the shell until the server is operational and ready to accept connections.
+           Additionaly, we examine how the server handles, processes, parses
+           and respondes to client requests.
+        <p></p>
+           We assume that the Gunicorn server directs its requests to a Django application. We won't
+           discuss the internals of Django in this document; However, we do provide a brief outline on
+           how it interfaces with Gunicorn - we examine APIs responsible for the interaction
+           between the two applications.
+        <p></p>
+           <b>Note:</b> The use of documentation’s references and Github source code hyperlinks on
+           functions and classes is intended to encourage the reader to read professional technical
+           guides, and also empower them with skills to navigate large codebases, understanding how
+           they are generally structured.
+        </p>
+
+        <h4>Server startup</h4>
+        <p>The following is the shell’s command with which we will commence the tracing:</p>
+        <div class="code-block">
+            <pre style="text-align: center; margin-left: 0em;"> gunicorn django_ref.wsgi:application - - bind 127.0.0.1:8000 - - workers 4</pre>
+        </div>
+        <p>While tracing the server, we adopt the “paused and resumed” thread terminology
+           which aim to highlight the non-linear interactions of Gunicorn’s components - functionality
+           does not always fit neatly in one section.
+        <p></p>
+
+        <h4>Django Application:</h4>
+        The Django application for the above shell’s command listens for requests on the
+        URL: <a href="http://13.247.175.114/">Machine Learning Application</a>, and the codebase
+        is hosted on Github. This a project I have been working on.
+        </p>
+
+        <h4>A brief on Gunicorn</h4>
+        <p>For a detailed discussion on why Gunicorn server is a necessary component of the Python
+           ecosystem, we refer the reader to: <a href="https://peps.python.org/pep-3333/">PEP 3333</a>
+        </p>
+        <hr style="margin-top: 30px;">
+
+        <h2>Gunicorn startup</h2>
+
+        <h4>Data structures</h4>
+        <ul><li>
+            <p>The <span style="font-family:monospace; font-size:10px;">gunicorn.app</span>
+               package defines the classes: <span style="font-family:monospace; font-size:10px;">
+               BaseApplication</span>, concrete applications inherits from this class;
+               <span style="font-family:monospace; font-size:10px;">Application</span> class,
+               first level class in a deep inheritance relationship; the concrete application classes,
+               <span style="font-family:monospace; font-size:10px;">WSGIApplication</span>
+               and <span style="font-family:monospace; font-size:10px;">PasteApplication</span>.
+               The classes define methods, especially the run method, responsible for
+               starting the server. The subclass of our interest is the <span style="font-family
+               :monospace; font-size:10px;"> WSGIApplication</span>. It has the following MRO:
+            </p>
+        </li></ul>
+
+        <ul><div class="code-block">
+            <pre style="margin-left: 0em;">(&lt;class 'gunicorn.app.wsgiapp.WSGIApplication'&gt;, &lt;class 'gunicorn.app.base.Application'&gt;, &lt;class 'gunicorn.app.base.BaseApplication'&gt;, &lt;class 'object'&gt;)</pre>
+        </div></ul>
+            
+        <ul><li>
+            <p>An <a href="https://docs.python.org/3/howto/mro.html">MRO (Method Resolution Object)</a>
+                is a Python class concept; among many other things it describes, it can be used to
+                examine a class inheritance structure. From the above MRO,
+                <span style="font-family:monospace; font-size:10px;">WSGIApplication</span> inherits
+                <span style="font-family:monospace; font-size:10px;">
+                BaseApplication.__init__</span> as its initialisation method. Additionaly, it also
+                inherits other important functionality such as: <span style="font-family:monospace;
+                font-size:10px;">run</span>, <span style="font-family:monospace; font-size:10px;">
+                load_config </span>. For more about MRO, please refer to
+                the Python documentation. 
+            </p>
+        </ul></li>
+        <p>        
+            The <span style="font-family:monospace; font-size:10px;">run
+            </span>
+            function initializes the <span style="font-family:monospace; font-size:10px;">
+            WSGIApplication</span> object, and then invokes the <span style="font-family:monospace;
+            font-size:10px;">run</span> method of the newly
+            initialized <span style="font-family:monospace; font-size:10px;">WSGIApplication
+            </span> - Thread paused, to be resumed in the next section.
+        </p>
+        <div class="milestone">
+            <b>Milestone:</b>
+            <p>We have set the process in motion.</p>
+        </div>
+        <hr>
+
+        <h2>The CLI, Configuration files and Environment variables - creating the Server state</h2>
+        <b>The CLI</b>
+        <p>A CLI is a user interface component to the application. It gives the user the power to
+            request particular services, and, at times, even control how the application should
+            behave while producing the requested output. We will explore how the Gunicorn
+            CLI is designed.
+        </p>
+
+        <h4>Data structures</h4>
+        <p>
+            <ul>
+                <li>
+                    The module <span style="font-family:monospace; font-size:10px;">gunicorn.config
+                    </span> describes the data structures and functionality required to use the CLI.
+                </li>
+                <li>
+                    Each CLI option is represented by a class, i.e., <span style="font-family:monospace;
+                    font-size:10px;">Bind</span>, <span style="font-family:monospace; font-size:10px;">
+                    Timeout,</span> and <span style="font-family:monospace; font-size:10px;">
+                    MaxRequests</span>. Option classes inherit from the
+                    <span style="font-family:monospace; font-size:10px;">Setting</span>
+                    class which defines class variables and methods that may be overridden. 
+                    Clearly, this design supports flexibility and extensibility; to add more options,
+                    one simply defines a corresponding class.
+                </li>
+                <li>
+                    Validators: we have different functions that are used to validate the command line
+                    options, i.e., <span style="font-family:monospace; font-size:10px;">validate_chdir
+                    </span> and <span style="font-family:monospace; font-size:10px;">validate_user</span>
+                    .Validation of user data is crucial in modern software applications as it mitigates
+                    vulnerabilities and security risks.
+                </li>
+                <li>
+                    The metaclass <span style="font-family:monospace; font-size:10px;">
+                    SettingsMeta</span> is responsible for crafting a new option class. The global list
+                    <span style="font-family:monospace; font-size:10px;">KNOWN_SETTINGS</span>
+                    is populated with the CLI option classes (not instances) defined in the module.
+                    This process happens during module import.
+                    For a detailed discussion of how the Python import system works, refer to documentation.
+                    Let’s demonstrate with an example - a
+                    <span style="font-family:monospace; font-size:10px;">Bind</span> class:
+                </li>
+            </ul>
+        </p>
+        <ul><ul>
+            <li>
+                The global variable <span style="font-family:monospace; font-size:10px;">
+                Setting</span> is assigned a class constructed using metaclass
+                <span style="font-family:monospace; font-size:10px;">SettingsMeta</span>, i.e.,
+                <span style="font-family:monospace; font-size:10px;">Setting</span> has
+                <span style="font-family:monospace; font-size:10px;">SettingsMeta</span> as its
+                metaclass and thereby inherits the <span style="font-family:monospace; font-size:10px;">
+                __new__</span> special method. The built-in Python’s
+                <span style="font-family:monospace; font-size:10px;">type</span> function has similar
+                usage. For more on metaclasses we refer the reader to the article on
+                <a href=https://realpython.com/python-metaclasses>Real python</a>.
+            </li>
+            <li>
+                When constructing the <span style="font-family:monospace; font-size:10px;">Bind</span>
+                class, <span style="font-family:monospace; font-size:10px;">SettigsMeta.__new__</span>
+                special method is executed and populates the <span style="font-family:monospace;
+                font-size:10px;">attr</span> dictionary with an appropriate validator for Bind.
+            </li>
+            <li>
+                Invokes <span style="font-family:monospace; font-size:10px;">__init__</span>
+                special method of the <span style="font-family:monospace; font-size:10px;">Setting
+                </span> class to finalize the initialization after validating its default values.
+            </li>
+        </ul></ul>
+        <p>
+            For more discussion on Gunicorn options, refer to the
+            <a href=https://docs.gunicorn.org/en/stable/configure.html#command-line>Gunicorn
+            documentation</a>.
+        </p>
+
+        <b>Configuration files and Environment variables</b>
+        <p>
+           Configuration files and Environment variables are yet another form that provides users
+           with control over an application, allowing them to specify how the system should behave.
+           We explore the functionality responsible for processing and parsing configuration files and
+           environment variables
+        </p>
+
+        <h4>The run function thread resumed and proceeds as follows</h4>
+        <p>
+            The <span style="font-family:monospace; font-size:10px;">WSGIApplication</span>
+            object is initialised by the method <span style="font-family:monospace; font-size:10px;">
+            BaseApplication.__init__</span> and executes as follows:
+        </p>
+        <ul>
+            <li>
+                Sets up some attribute values, such as <span style="font-family:monospace; font-size:10px;">
+                self.usage</span> and <span style="font-family:monospace; font-size:10px;">
+                self.callable</span>.
+            </li>
+            <li>
+                Executes <span style="font-family:monospace; font-size:10px;">do_load_config</span>
+                method which in turn initialises <span style="font-family:monospace; font-size:10px;">
+                Config</span> class by calling <span style="font-family:monospace; font-size:10px;">
+                do_load_default_config</span> method.
+            </li>
+            <li>
+                <span style="font-family:monospace; font-size:10px;">Config.__init__</span>
+                initialisation method does the following:
+                <ul>
+                    <li>
+                        While intialiazing its attributes it executes the function
+                        <span style="font-family:monospace; font-size:10px;">make_settings</span>
+                        which iterates through the list global variable <span style="font-family:monospace;
+                        font-size:10px;">KNOWN_SETTINGS</span>, and populates the dictionary local variable settings
+                        with each CLI option class instance or object; not with a class, but an object.
+                    </li>
+                    <li>The settings dictionary has the value as the instance, and the name of the option as its key.</li>
+                </ul>
+            </li>
+            <li>Proceeds to call the <span style="font-family:monospace; font-size:10px;">run</span>
+                method of <span style="font-family:monospace; font-size:10px;">WSGIApplication</span>
+                object which does the following:
+                <ul>
+                    <li>Checks some debugging options and displays messages accordingly.</li>
+                    <li>If the user only requests to view the system configuration object, prints it
+                        and exit.</li>
+                    <li>Sets python paths and</li>
+                    <li>Calls <span style="font-family:monospace; font-size:10px;">run</span> method
+                        of <span style="font-family:monospace; font-size:10px;">BaseApplication</span>
+                        class which then proceeds as follows:
+                        <ul>
+                            <li>Initialises the <span style="font-family:monospace; font-size:10px;">
+                                Arbiter</span> class and</li>
+                            <li>Executes <span style="font-family:monospace; font-size:10px;">
+                                Arbiter run</span> method - Thread paused, to be continued under
+                                the Arbiter section.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+        <p>
+            Please note that although we don’t discuss much of debugging and error handling, Gunicorn
+            has been extensively written to accormodate them as evidenced by the usage of the
+            <span style="font-family:monospace; font-size:10px;">try...except statement</span>,
+            and CLI options like <span style="font-family:monospace; font-size:10px;">Spew</span>.
+        </p>
+        <div class="milestone">
+            <b>Milestone</b>
+            <p>
+                We have successfully constructed the server’s state and assign it to the
+               self.settings WSGIApplication attribute. It reflects how the user has
+               configured the application to suit his demands.
+            </p>
+        </div>
+        <h4>Example of populated state which includes: options, configs and environment variables:</h4>
+        <div class="code-block">
+           <pre style="text-align: left;">
+                {
+                  'config': &lt;gunicorn.config.ConfigFile object at 0x7dd8aa41f410 with value './gunicorn.conf.py'&gt;,
+                  'wsgi_app': &lt;gunicorn.config.WSGIApp object at 0x7dd8aafffda0 with value None&gt;,
+                  'bind': &lt;gunicorn.config.Bind object at 0x7dd8aa5c0350 with value ['127.0.0.1:8000']&gt;,
+                  'backlog': &lt;gunicorn.config.Backlog object at 0x7dd8aa35ddc0 with value 2048&gt;,
+                  'workers': &lt;gunicorn.config.Workers object at 0x7dd8aaffef90 with value 1&gt;,
+                  'worker_class': &lt;gunicorn.config.WorkerClass object at 0x7dd8aa5c0a70 with value 'sync'&gt;,
+                  'threads': &lt;gunicorn.config.WorkerThreads object at 0x7dd8aaffef60 with value 1&gt;
+                }
+           </pre>
+        </div>
+        <p>
+            For Gunicorn’s example configuration file, refer to the
+           <a href="https://docs.gunicorn.org/en/stable/configure.html#command-line">
+            Gunicorn documentation.</a>
+        </p>
+        <hr  style="margin-top: 30px;">
+
+        <h2>Architectural design and Gunicorn processes - The Arbiter and Workers</h2>
+        <p>
+           According to Gunicorn’s documentation, Gunicorn is designed as a master-slave architecture.
+           It has a master process called the Arbiter and can be configured with at least one worker
+           processes - the slaves. Please refer to the documentation for a more detailed description
+           including diagrams.
+        </p>
+
+        <b>The Arbiter</b>
+        <p>
+           The Arbiter is responsible for spawning new worker processes, receiving signals and managing
+           the spawned worker processes.
+        </p>
+
+        <h4>Data structures</h4>
+        <p>
+            <ul>
+                <li>
+                    The module <span style="font-family:monospace; font-size:10px;">arbiter</span> defines the
+                    class <span style="font-family:monospace; font-size:10px;">Arbiter</span> which represents
+                    the master process and functionality for managing worker processes.
+                </li>
+                <li>
+                    The module <span style="font-family:monospace; font-size:10px;">sock</span> defines
+                    the function <span style="font-family:monospace; font-size:10px;">create_sockets
+                    </span> which creates sockets. Communication sockets are defined as
+                    subclasses of the base class <span style="font-family:monospace; font-size:10px;">
+                    BaseSocket</span>. The sockets includes: <span style="font-family:monospace;
+                    font-size:10px;">TCPSocket</span>, <span style="font-family:monospace; font-size:10px;">
+                    UnixSocket</span> and <span style="font-family:monospace; font-size:10px;">
+                    TCP6Socket</span> – also inherits from <span style="font-family:monospace; font-size:10px;">
+                    TCPSocket</span>.
+                </li>
+                <li>
+                    The module <span style="font-family:monospace; font-size:10px;">util</span> defines
+                    the function <span style="font-family:monospace; font-size:10px;">load_class</span>
+                    . The <span style="font-family:monospace; font-size:10px;">
+                    worker_class</span> property of <span style="font-family:monospace; font-size:10px;">
+                    Config</span> class uses this function to load the relevant Worker class. 
+                    Worker classes are discussed in the next section.
+                </li>
+            </ul>
+        </p>
+        <h4>Thread resumed</h4>
+        <p>
+            <span style="font-family:monospace; font-size:10px;">Arbiter.__init__</span> initialisation
+            method does the following:
+        </p>
+        <ul>
+            <li>
+                Initialises various attributes such as <span style="font-family:monospace; font-size:10px;">
+                self.num_workers</span>, <span style="font-family:monospace; font-size:10px;">
+                self.worker_age</span> and <span style="font-family:monospace; font-size:10px;">
+                self.pidfile</span>
+            </li>
+            <li>
+                Calls the method <span style="font-family:monospace; font-size:10px;">setup</span>
+                passing it the app argument - <span style="font-family:monospace; font-size:10px;">
+                WSGIApplication</span>.
+            </li>
+        </ul>
+        <ul><p>The <span style="font-family:monospace; font-size:10px;">setup</span> method proceeds
+            as follows:</p></ul>
+        <ul>
+            <li>
+                Extracts the config object from app and assigns it to <span style="font-family:monospace;
+            font-size:10px;">self.app</span> attribute
+            </li>
+            <li>
+                Using the property <span style="font-family:monospace; font-size:10px;">worker_class</span>
+                of <span style="font-family:monospace; font-size:10px;">Config</span> class and the
+                <span style="font-family:monospace; font-size:10px;">self.app_uri</span>, it imports the
+                correct Worker class. The attribute <span style="font-family:monospace; font-size:10px;">
+                self.app_uri</span> will be discussed in the last section.
+            </li>
+            <li>Sets up the environment variables.</li>
+            <li>Proceeds and initialises <span style="font-family:monospace; font-size:10px;">
+                START_CTX</span> class variable.</li>
+            <li>
+                Then <span style="font-family:monospace; font-size:10px;">BaseApplication run</span> method
+                executes the corresponding <span style="font-family:monospace; font-size:10px;">run</span>
+                method of the newly initialised <span style="font-family:monospace; font-size:10px;">
+                Arbiter</span> class instance.
+            </li>
+        </ul>
+        <ul><p>The <span style="font-family:monospace; font-size:10px;">Arbiter.run</span> method proceeds
+            as follows:</p></ul>
+        <ul>
+            <li>This method acts as the Master main loop and uses the while statement to manage the workers
+                and listens for signals.</li>
+            <li>It executes the <span style="font-family:monospace; font-size:10px;">start</span> method
+                which proceeds as follows:
+                <ul>
+                    <li>
+                        The main objective of this method is to create listeners - the workers – by calling
+                        <span style="font-family:monospace; font-size:10px;">create_sockets</span> function
+                        which is detailed above.
+                    </li>
+                    <li>
+                        It then executes the <span style="font-family:monospace; font-size:10px;">
+                        manage_workers</span> method which primarily performs checks and invokes
+                        <span style="font-family:monospace; font-size:10px;">spawn_worker</span> method.
+                    </li>
+                </ul>
+            </li>
+            <ul>Method <span style="font-family:monospace; font-size:10px;">spawn_worker</span> in turn proceeds
+                as follows:
+                <ul>
+                    <li>Utilizing <span style="font-family:monospace; font-size:10px;">
+                        self.worker_class</span> attribute, it initialises the corresponding Worker
+                        process instance by invoking special method <span style="font-family:monospace;
+                        font-size:10px;">Worker.__init__</span>, which then calls
+                        <span style="font-family:monospace; font-size:10px;">init_process</span>
+                        method of the newly initialised worker instance.
+                    </li>
+                </ul>
+            </ul>
+        </ul>
+        <p>Thread paused, continues in the next section.</p>
+
+        <b>Worker processes:</b>
+        <p>
+           Worker processes handle the heavy load of processing client’s request and sending off
+           appropriate responses. Workers are processes, not threads - Gunicorn design choice;
+           However, they can also be configured to use threads to adapt to scalability demands;
+           in fact, Gunicorn has a variety of design frameworks for the workers, detailed below.
+        </p>
+
+        <h4>Data structures</h4>
+        <p>
+            The package <span style="font-family:monospace; font-size:10px;">gunicorn.workers</span>
+            defines the classes and various functionality. Class design is based on inheritance.
+            Worker subclasses are models that represent different computational design choices, i.e.,
+            they can be configured as synchronous or asynchronous, whether to use threads or not given
+            the problem needs. The following modules detail the concerned subclasses:
+        </p>
+        <ul>
+            <li>
+                The module <span style="font-family:monospace; font-size:10px;">workers.base</span>
+                defines the base class <span style="font-family:monospace; font-size:10px;">
+                Worker</span> which worker subclasses inherit from, it is mostly responsible for the
+                initialisation of subclasses and defines the <span style="font-family:monospace;
+                font-size:10px;">run</span> method which must be overridden.
+            </li>
+            <li>
+                The module <span style="font-family:monospace; font-size:10px;">workers.sync</span> defines
+                the <span style="font-family:monospace; font-size:10px;">SyncWorker</span> class for synchronous
+                execution
+            </li>
+            <li>
+                The module <span style="font-family:monospace; font-size:10px;">workers.gthread</span> defines
+                the <span style="font-family:monospace; font-size:10px;">ThreadWorker</span> class for
+                thread support in a worker process.
+            </li>
+            <li>
+                The module <span style="font-family:monospace; font-size:10px;">workers.ggevent</span> defines
+                <span style="font-family:monospace; font-size:10px;">GeventWorker</span> class.
+                Please refer to the documentation for more on this model design choice.
+            </li>
+           <li>The package also offers other design choices for the worker processes, such as gtornado
+               and geventlet - refer to the documentations of gtornado and geventlet for more on these
+               frameworks.
+            </li>
+            <li>
+                The module <span style="font-family:monospace; font-size:10px;">wsgi</span> defines
+                the function <span style="font-family:monospace; font-size:10px;">create</span> which
+                is responsible for creating a WSGI environment, and a Response object. These objects
+                - WSGI environment and Response object - are used as arguments to the special method
+                <span style="font-family:monospace; font-size:10px;">WSGIHandler.__call__</span>
+                for Gunicorn-Django interface [More on this in the last section].
+                To create the WSGI environment the function uses the <span style="font-family:monospace;
+                font-size:10px;">base_environ</span> and <span style="font-family:monospace; font-size:10px;">
+                default_environ</span> functions, also defined in the module.
+            </li>
+        </ul>
+
+        <h4>Thread resumes</h4>
+        <p><span style="font-family:monospace; font-size:10px;">Worker.init_process</span> special
+            method is called and executes as follows:</p>
+        <ul>
+            <li>Sets up pipes data structure</li>
+            <li>Initialises signals by calling <span style="font-family:monospace; font-size:10px;">
+                init_signal</span> method.</li>
+            <li>Loads the <span style="font-family:monospace; font-size:10px;">WSGIHandler</span>
+                object and assigns it to the worker attribute <span style="font-family:monospace;
+                font-size:10px;">self.wsgi</span>.</li>
+            <li>Executes the <span style="font-family:monospace; font-size:10px;">run</span> method of the
+                relevant Worker subclass which in our case is the: <span style="font-family:monospace;
+                font-size:10px;">SyncWorker</span>.</li>
+        </ul>
+        <p>The <span style="font-family:monospace; font-size:10px;">SyncWorker.run</span> method proceeds
+            as follows:</p>
+        <ul>
+            <li>Executes <span style="font-family:monospace; font-size:10px;">run_for_one</span> method
+                which in turn proceeds as follows:
+                <ul>
+                    <li>Runs a while loop and executes the method <span style="font-family:monospace;
+                    font-size:10px;">accept</span> which in turn executes the method
+                    <span style="font-family:monospace; font-size:10px;">handle</span>.</li>
+                </ul>
+            </li>
+            <li>The method <span style="font-family:monospace; font-size:10px;">handle</span> proceeds
+                as follows:
+                <ul>
+                    <li>Constructs the <span style="font-family:monospace; font-size:10px;">
+                        RequestParser</span> instance.</li>
+                    <li>Iterate over the instance, returns a <span style="font-family:monospace;
+                        font-size:10px;">self.msg</span> object [We expand on this in the next section]
+                        and calls <span style="font-family:monospace; font-size:10px;">handle_request</span>
+                        method which then proceeds as follows:
+                        <ul>
+                            <li>Calls <span style="font-family:monospace; font-size:10px;">create</span> function
+                                which executes and returns a <span style="font-family:monospace; font-size:10px;">
+                                resp (Response)</span> and <span style="font-family:monospace; font-size:10px;">
+                                environ (WSGI environment)</span> objects as detailed above.
+                            </li>
+                            <li>Then proceeds and calls the <span style="font-family:monospace; font-size:10px;">
+                                self.wsgi</span> application instance - <span style="font-family:monospace;
+                                font-size:10px;">WSGIHandler</span>. Paused, this will be expanded on in the relevant
+                                section - Django-Gunicorn interface.
+                            </li>
+                        </ul>
+                    </li>
+                    <li>Utilizing the returned <span style="font-family:monospace; font-size:10px;">resp
+                    </span>, the Response object, the function then continues and write a
+                    <span style="font-family:monospace; font-size:10px;">respiter</span>, iterator
+                    object, message to create the client’s response using the
+                    <span style="font-family:monospace; font-size:10px;">write_file</span> method which
+                    proceeds as follows:
+                        <ul>
+                            <li><span style="font-family:monospace; font-size:10px;">resp</span> is a
+                                Response object and <span style="font-family:monospace; font-size:10px;">
+                                write_file</span> is invoked to write the data stored in the iterator
+                                <span style="font-family:monospace; font-size:10px;">respiter</span> to
+                                create the client’s response object, and the data is obtained from the
+                                Django application.
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+        <div class="milestone">
+            <b>Milestone:</b>
+            <p>We have a server that consists of the master process and an arbitrarily number of worker
+                processes which are configured to handle the requests as per the user’s demands.
+                We demonstrated how the server receives a request and processes it to construct the
+                response in conjunction with the Django application; However, the details of parsing
+                and processing the request are discussed in the next section.
+            </p>
+        </div>
+        <hr>
+        <h2>HTTP messages and Parsing</h2>
+        <p>
+            Communication between processes is at the heart of modern internet; after all, a server and
+            a client are merely processes running on a computer with a well-defined protocol to
+            facilitate communication. Networking, a form of communication, is a vast topic and it
+            includes standardised models like the <a href="https://www.iso.org/ics/35.100/x/">OSI</a>
+            model, where HTTP serves as one of the communications protocol at the Application layer.
+            In this section we will describe the
+            data structures used to represent the sent HTTP messages (requests) and received messages
+            (responses). We will also discuss the structures that represent the Parser, and how raw
+            messages are read from systems using sockets and other mechanisms.
+        </p>
+
+        <h4>Data structures</h4>
+        <p>
+            <ul>
+                <li>The module <span style="font-family:monospace; font-size:10px;">http.body</span>
+                    defines the class <span style="font-family:monospace; font-size:10px;">Body</span>
+                    which represents an HTTP message’s body. It also defines classes that represent
+                    different approaches for reading the message’s body, i.e.,
+                    <span style="font-family:monospace; font-size:10px;">
+                    LengthReader</span>. <span style="font-family:monospace; font-size:10px;">
+                    Body</span>and message reader classes have a “has a” relationship established
+                    through the attribute reader of <span style="font-family:monospace;
+                    font-size:10px;">Body</span>. 
+                </li>
+                <li>
+                    The module <span style="font-family:monospace; font-size:10px;">http.message
+                    </span> defines the class <span style="font-family:monospace; font-size:10px;">
+                    Message</span> which represents the HTTP message and it has a “has-a” relationship
+                    with the <span style="font-family:monospace; font-size:10px;">Body</span> class
+                    described above.
+                </li>
+                <li>
+                    The module <span style="font-family:monospace; font-size:10px;">http.wsgi</span>
+                    defines the <span style="font-family:monospace; font-size:10px;">Request</span>
+                    object which is a <span style="font-family:monospace; font-size:10px;">
+                    Message</span> subclass and implements a <span style="font-family:monospace;
+                    font-size:10px;">parse</span> method.
+                </li>
+                <li>
+                    The module <span style="font-family:monospace; font-size:10px;">http.unreader
+                    </span> defines data structures related to reading sockets. It defines the class
+                    <span style="font-family:monospace; font-size:10px;">Unreader</span> as a base
+                    class and subclasses such as: <span style="font-family:monospace; font-size:10px;">
+                    SocketUnreader</span>. The <span style="font-family:monospace; font-size:10px;">
+                    SocketUnreader</span> uses sockets to read and write messages.
+                </li>
+                <li>
+                    The module <span style="font-family:monospace; font-size:10px;">http.parser</span>
+                    defines the base class <span style="font-family:monospace; font-size:10px;">
+                    Parser</span> and its subclass <span style="font-family:monospace; font-size:10px;">
+                    RequestParser</span>. <span style="font-family:monospace; font-size:10px;">
+                    RequestParser</span> has a <span style="font-family:monospace; font-size:10px;">
+                    Request</span> class variable creating a “has-a” relationship between them.
+                    The function <span style="font-family:monospace; font-size:10px;">create</span>
+                    when executed returns objects that are passed to a Django callable -
+                    Gunicorn-Django interface. It was examined in the previous section.
+                </li>
+            </ul>
+        </p>
+
+        <h4>A discussion on request processing and parsing</h4>
+        <p> 
+            Working with the Request object involves the method <span style="font-family:monospace;
+            font-size:10px;">__next__</span> of <span style="font-family:monospace; font-size:10px;">
+            RequestParser</span> instance and it proceeds as follows:
+       </p>
+        <ul>
+            <li>First, checks if there still data in the message object to be discarded</li>
+            <li>Then proceeds to initialise a new message object with the special method
+                <span style="font-family:monospace; font-size:10px;">Message.__init__</span>, and it
+                proceeds as follows:
+                <ul>
+                    <li>Sets various attributes including the unreader object</li>
+                    <li>Proceeds to set limits on header size and maximum buffer sizes</li>
+                    <li>Calls the method <span style="font-family:monospace; font-size:10px;">parse
+                        </span> which parses the HTTP message object, it proceeds as follows:
+                        <ul>
+                            <li>
+                                Calls <span style="font-family:monospace; font-size:10px;">
+                                get_data</span> method which uses the socket API to read the and
+                                write data from sockets. For more please refer to the socket Python
+                                documentation
+                            </li>
+                            <li>
+                                Calls the method <span style="font-family:monospace; font-size:10px;">
+                                parse_headers</span> to parse the message headers and assign them to
+                                <span style="font-family:monospace; font-size:10px;">self.headers
+                                </span> attribute.
+                            </li>
+                        </ul>
+                    </li>
+                    <li>Call the method <span style="font-family:monospace; font-size:10px;">
+                        set_body_reader</span> which does the following:
+                        <ul>
+                            <li>Performs checks on the headers in order to raise appropriate errors.</li>
+                            <li>
+                                Depending on content_length or if the message is chunked set the
+                                appropriate instance of <span style="font-family:monospace; font-size:10px;">
+                                Body</span> class and assign it to <span style="font-family:monospace;
+                                font-size:10px;">self.body</span> attribute.
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+        <div class="milestone">
+            <b>Milestone</b>
+            <p>We have demonstrated how a request message is created and parsed.</p>
+        </div>
+
+        <h3>Parsing examples</h3>
+        <h4>HTTP Request messages</h4>
+        <div class="code-block">
+           <pre>
+                GET /favicon.ico HTTP/1.1
+                Host:               127.0.0.1:8000
+                Connection:         keep-alive
+                sec-ch-ua:          "Not A Brand";v="99", "Google Chrome";v="121", "Chromium";v="121"
+                sec-ch-ua-mobile:   ?0
+                User-Agent:         Mozilla/5.0 (X11; Linux x86_64)
+                                    AppleWebKit/537.36 (KHTML, like Gecko)
+                                    Chrome/121.0.0.0 Safari/537.36
+                sec-ch-ua-platform: "Linux"
+                Accept:             image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8
+                Sec-Fetch-Site:     same-origin
+                Sec-Fetch-Mode:     no-cors
+                Sec-Fetch-Dest:     image
+                Referer:            http://127.0.0.1:8000/
+                Accept-Encoding:    gzip, deflate, br, zstd
+                Accept-Language:    en-GB,en-US;q=0.9,en;q=0.8
+            </pre>
+        </div>
+        <h4>Headers</h4>
+        <div class="code-block">
+            <pre>
+                Host: 127.0.0.1:8000
+                Connection: keep-alive
+                sec-ch-ua: "Not A Brand";v="99", "Google Chrome";v="121", "Chromium";v="121"
+                sec-ch-ua-mobile: ?0
+                User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36
+                sec-ch-ua-platform: "Linux"
+                Accept: image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8
+                Sec-Fetch-Site: same-origin
+                Sec-Fetch-Mode: no-cors
+                Sec-Fetch-Dest: image
+                Referer: http://127.0.0.1:8000/
+                Accept-Encoding: gzip, deflate, br, zstd
+                Accept-Language: en-GB,en-US;q=0.9,en;q=0.8
+            </pre>
+        </div>
+        <h4>Parsed Headers</h4>
+        <div class="code-block">
+            <pre>
+                HOST:                127.0.0.1:8000
+                CONNECTION:          keep-alive
+                SEC-CH-UA:           "Not A Brand";v="99", "Google Chrome";v="121", "Chromium";v="121"
+                SEC-CH-UA-MOBILE:    ?0
+                USER-AGENT:          Mozilla/5.0 (X11; Linux x86_64)
+                                    AppleWebKit/537.36 (KHTML, like Gecko)
+                                    Chrome/121.0.0.0 Safari/537.36
+                SEC-CH-UA-PLATFORM:  "Linux"
+                ACCEPT:              image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8
+                SEC-FETCH-SITE:      same-origin
+                SEC-FETCH-MODE:      no-cors
+                SEC-FETCH-DEST:      image
+                REFERER:             http://127.0.0.1:8000/
+                ACCEPT-ENCODING:     gzip, deflate, br, zstd
+                ACCEPT-LANGUAGE:     en-GB,en-US;q=0.9,en;q=0.8
+            </pre>
+        </div>
+        <hr>
+        <h2>Django-Gunicorn interface</h2>
+        <p>
+            In this section we sketch out a brief description of how Django and Gunicorn interface.
+            Looking back again at our command executed by the shell, the argument
+            <span style="font-family:monospace; font-size:10px;">django_ref.wsgi:application</span>
+            links to a Django file: <span style="font-family:monospace; font-size:10px;">
+            django_ref.wsgi</span>. The function <span style="font-family:monospace; font-size:10px;">
+            get_wsgi_application</span> assigned to the application global variable initialises
+            the <span style="font-family:monospace; font-size:10px;">WSGIHandler</span>.
+        </p>
+
+        <h4>Data structures</h4>
+        <p>
+            <ul>
+                <li>
+                    The module <span style="font-family:monospace; font-size:10px;">
+                    django.core.handlers.wsgi</span> defines the class
+                    <span style="font-family:monospace; font-size:10px;">WSGIRequest</span> which
+                    inherits from Django Request class. It also defines the class
+                    <span style="font-family:monospace; font-size:10px;">WSGIHandler</span> that has
+                    a <span style="font-family:monospace; font-size:10px;">WSGIRequest</span> class
+                    as its class variable. It creates the famous request parameter of Django’s view
+                    functions. We also note that the <span style="font-family:monospace; font-size:10px;">
+                    WSGIHandler</span> defines the special method
+                    <span style="font-family:monospace; font-size:10px;">__call__</span> as part of the
+                    Django-Gunicorn interface specification.
+                </li>
+            </ul>    
+        </p>
+
+        <h4>Creating application URI</h4>
+        <p>The method <span style="font-family:monospace; font-size:10px;">init</span> of
+            Application when executed proceeds as follows:</p>
+        <ul>
+            <li>
+                It checks the argument len if it’s greater than 1 and then extracts out the
+                <span style="font-family:monospace; font-size:10px;">django_ref</span> argument and
+                assign it to the <span style="font-family:monospace; font-size:10px;">app_uri</span>
+                attribute.
+            </li>
+        </ul>
+        <h4>WSGIHandler object</h4>
+        <p>
+            The <span style="font-family:monospace; font-size:10px;">load_wsgi</span> method of Worker
+            assigns the <span style="font-family:monospace; font-size:10px;">WSGIHandler</span> instance
+            to <span style="font-family:monospace; font-size:10px;">self.wsgi</span> attribute of the
+            configured Worker subclass. The method proceeds as follows:
+        </p>
+        <ul>
+            <li>
+                It calls the <span style="font-family:monospace; font-size:10px;">wsgi</span> method of
+                <span style="font-family:monospace; font-size:10px;">self.app</span>, Application object,
+                which then calls the method <span style="font-family:monospace; font-size:10px;">
+                load_wsgiapp</span> which in turn calls the <span style="font-family:monospace;
+                font-size:10px;">import_app</span> function from
+                <span style="font-family:monospace; font-size:10px;">util</span> module.
+            </li>
+        </ul>
+        <p>
+             loading of <span style="font-family:monospace; font-size:10px;">WSGIHandler</span>
+            and assigned to <span style="font-family:monospace; font-size:10px;">self.wsgi</span>, it
+            is called in the method <span style="font-family:monospace; font-size:10px;">handle_request
+            </span> of Worker class, and proceeds as follows:
+        </p>
+        <ul>
+            <li>
+                The method <span style="font-family:monospace; font-size:10px;">__call__</span> of
+                <span style="font-family:monospace; font-size:10px;">WSGIHandler</span> is invoked
+                and passed the arguments <span style="font-family:monospace; font-size:10px;">
+                environ</span> and <span style="font-family:monospace; font-size:10px;">
+                resp.start_response</span> - We have now reached the inside of Django processing
+                the WSGI request and creating the response.
+            </li>
+        </ul>
+        <div class="milestone">
+            <b>Milestone:</b>
+            <p>
+                In this section we have sketched a brief description of how the Django-Gunicorn
+                interface works. In the next articles, we will expand from here and dive into the
+                internals of Django.
+            </p>
+        </div>
+        <hr>
+    </div>
+</body>
+ <footer>
+          <div class="footer">
+            <div class="row">
+                <ul>
+                    <li><a href="#"><i class="fa-brands fa-linkedin"></i></a></li>
+                    <li><a href="#"><i class="fa-brands fa-github"></i></a></li>
+                    <!-- <li><a href="#"><i class="fa-brands fa-linkedin"></i></a></li> -->
+                    <!-- <li><a href="{% url 'about' %}">About</a></li> -->
+                    <!-- <li><a href="#">Services</a></li> -->
+                </ul>
+            </div>
+          </div>
+        </footer>
+</html>
