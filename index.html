@@ -7,6 +7,10 @@
     <!-- <link rel="stylesheet" type="text/css" href="{% static 'logistic/css/home_style.css' %}"> -->
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Play&display=swap"
     rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     <link rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
@@ -31,6 +35,7 @@
             font-size: 1.2em;
             color: black;
             text-decoration: underline;
+            margin-top: 1.5em;
         }
         h2 {
             font-size: 1.3em;
@@ -108,7 +113,7 @@
             margin: 3em 0;
             /* font-weight: bold; */
             font-family: monospace;
-            font-size: 13px;
+            font-size: 14px;
         }
         .footer{
                 margin-top: 20%;
@@ -187,6 +192,24 @@
     </style>
 </head>
 <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span>
+        </button>
+         <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav nav navbar-nav navbar-logo mr-auto">
+                 <span><li><a class="nav-item nav-link" href="{% url 'logout' %}">Logout</a></li></span>
+                 <span><li><a class="nav-item nav-link" href="{% url 'login' %}">Login</a></li></span>
+                 <span><li><a class="nav-item nav-link" href="{% url 'register' %}">Register</a></li></span>   
+            </ul>
+          </div>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav nav navbar-nav navbar-logo mr-auto"></ul>
+            <form class="form-inline my-2 my-lg-0">
+              <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+              <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+            </form>
+          </div>
+    </nav>
     <div class="container">
         <h1><u>HOW GUNICORN WORKS</u></h1>
         <p style="color: gray;">May 24, 2025</p>
@@ -221,7 +244,7 @@
         <h4>Server startup</h4>
         <p>The following is the shell’s command with which we will commence the tracing:</p>
         <div class="code-block">
-            <pre style="text-align: center; margin-left: 0em;"> gunicorn django_ref.wsgi:application - - bind 127.0.0.1:8000 - - workers 4</pre>
+            <pre style="text-align: center; margin-left: 0em; font-size: 12px;"> gunicorn django_ref.wsgi:application - - bind 127.0.0.1:8000 - - workers 4</pre>
         </div>
         <p>While tracing the server, we adopt the “paused and resumed” thread terminology
            which aim to highlight the non-linear interactions of Gunicorn’s components - functionality
@@ -244,43 +267,45 @@
 
         <h4>Data structures</h4>
         <ul><li>
-            <p>The <span style="font-family:monospace; font-size:10px;">gunicorn.app</span>
-               package defines the classes: <span style="font-family:monospace; font-size:10px;">
-               BaseApplication</span>, concrete applications inherits from this class;
-               <span style="font-family:monospace; font-size:10px;">Application</span> class,
+            <p>The <span style="font-family:monospace; font-size:11.5px;">gunicorn.app</span>
+               package defines the classes: <span style="font-family:monospace;font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/app/base.py#L16">
+               BaseApplication</a></span>, concrete applications inherits from this class;
+               <span style="font-family:monospace; font-size:11.5px;">
+                <a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/app/base.py#L78">Application</a></span> class,
                first level class in a deep inheritance relationship; the concrete application classes,
-               <span style="font-family:monospace; font-size:10px;">WSGIApplication</span>
-               and <span style="font-family:monospace; font-size:10px;">PasteApplication</span>.
+               <span style="font-family:monospace; font-size:11.5px;">
+                <a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/app/wsgiapp.py#L12">WSGIApplication</a></span>
+               and <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/app/pasterapp.py#L53">PasteServerApplication</a></span>.
                The classes define methods, especially the run method, responsible for
                starting the server. The subclass of our interest is the <span style="font-family
-               :monospace; font-size:10px;"> WSGIApplication</span>. It has the following MRO:
+               :monospace; font-size:11.5px;"> WSGIApplication</span>. It has the following MRO:
             </p>
         </li></ul>
 
         <ul><div class="code-block">
-            <pre style="margin-left: 0em;">(&lt;class 'gunicorn.app.wsgiapp.WSGIApplication'&gt;, &lt;class 'gunicorn.app.base.Application'&gt;, &lt;class 'gunicorn.app.base.BaseApplication'&gt;, &lt;class 'object'&gt;)</pre>
+            <pre style="margin-left: 0em; font-size: 12px">(&lt;class 'gunicorn.app.wsgiapp.WSGIApplication'&gt;, &lt;class 'gunicorn.app.base.Application'&gt;, &lt;class 'gunicorn.app.base.BaseApplication'&gt;, &lt;class 'object'&gt;)</pre>
         </div></ul>
             
         <ul><li>
             <p>An <a href="https://docs.python.org/3/howto/mro.html">MRO (Method Resolution Object)</a>
                 is a Python class concept; among many other things it describes, it can be used to
                 examine a class inheritance structure. From the above MRO,
-                <span style="font-family:monospace; font-size:10px;">WSGIApplication</span> inherits
-                <span style="font-family:monospace; font-size:10px;">
+                <span style="font-family:monospace; font-size:11.5px;">WSGIApplication</span> inherits
+                <span style="font-family:monospace; font-size:11.5px;">
                 BaseApplication.__init__</span> as its initialisation method. Additionaly, it also
                 inherits other important functionality such as: <span style="font-family:monospace;
-                font-size:10px;">run</span>, <span style="font-family:monospace; font-size:10px;">
+                font-size:11.5px;">run</span>, <span style="font-family:monospace; font-size:11.5px;">
                 load_config </span>. For more about MRO, please refer to
                 the Python documentation. 
             </p>
         </ul></li>
         <p>        
-            The <span style="font-family:monospace; font-size:10px;">run
-            </span>
-            function initializes the <span style="font-family:monospace; font-size:10px;">
+            The <span style="font-family:monospace; font-size:11.5px;">
+            <a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/app/wsgiapp.py#L60">run</a> </span>
+            function initializes the <span style="font-family:monospace; font-size:11.5px;">
             WSGIApplication</span> object, and then invokes the <span style="font-family:monospace;
-            font-size:10px;">run</span> method of the newly
-            initialized <span style="font-family:monospace; font-size:10px;">WSGIApplication
+            font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/app/base.py#L201">run</a></span> method of the newly
+            initialized <span style="font-family:monospace; font-size:11.5px;">WSGIApplication
             </span> - Thread paused, to be resumed in the next section.
         </p>
         <div class="milestone">
@@ -291,7 +316,7 @@
 
         <h2>The CLI, Configuration files and Environment variables - creating the Server state</h2>
         <b>The CLI</b>
-        <p>A CLI is a user interface component to the application. It gives the user the power to
+        <p>A CLI is a user interface component for the application. It gives the user the power to
             request particular services, and, at times, even control how the application should
             behave while producing the requested output. We will explore how the Gunicorn
             CLI is designed.
@@ -301,60 +326,61 @@
         <p>
             <ul>
                 <li>
-                    The module <span style="font-family:monospace; font-size:10px;">gunicorn.config
+                    The module <span style="font-family:monospace; font-size:11.5px;">gunicorn.config
                     </span> describes the data structures and functionality required to use the CLI.
                 </li>
                 <li>
                     Each CLI option is represented by a class, i.e., <span style="font-family:monospace;
-                    font-size:10px;">Bind</span>, <span style="font-family:monospace; font-size:10px;">
-                    Timeout,</span> and <span style="font-family:monospace; font-size:10px;">
-                    MaxRequests</span>. Option classes inherit from the
-                    <span style="font-family:monospace; font-size:10px;">Setting</span>
+                    font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/config.py#L587">Bind</a></span>, <span style="font-family:monospace; font-size:11.5px;">
+                    <a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/config.py#L779">Timeout,</a></span> and <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/config.py#L740">
+                    MaxRequests</a></span>. Option classes inherit from the
+                    <span style="font-family:monospace; font-size:11.5px;">
+                    <a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/config.py#L258">Setting</a></span>
                     class which defines class variables and methods that may be overridden. 
                     Clearly, this design supports flexibility and extensibility; to add more options,
                     one simply defines a corresponding class.
                 </li>
                 <li>
                     Validators: we have different functions that are used to validate the command line
-                    options, i.e., <span style="font-family:monospace; font-size:10px;">validate_chdir
-                    </span> and <span style="font-family:monospace; font-size:10px;">validate_user</span>
+                    options, i.e., <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/config.py#L500">validate_chdir</a>
+                    </span> and <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/config.py#L457">validate_user</a></span>
                     .Validation of user data is crucial in modern software applications as it mitigates
                     vulnerabilities and security risks.
                 </li>
                 <li>
-                    The metaclass <span style="font-family:monospace; font-size:10px;">
-                    SettingsMeta</span> is responsible for crafting a new option class. The global list
-                    <span style="font-family:monospace; font-size:10px;">KNOWN_SETTINGS</span>
+                    The metaclass <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/config.py#L237">
+                    SettingsMeta</a></span> is responsible for crafting a new option class. The global list
+                    <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/config.py#L24">KNOWN_SETTINGS</a></span>
                     is populated with the CLI option classes (not instances) defined in the module.
                     This process happens during module import.
                     For a detailed discussion of how the Python import system works, refer to documentation.
                     Let’s demonstrate with an example - a
-                    <span style="font-family:monospace; font-size:10px;">Bind</span> class:
+                    <span style="font-family:monospace; font-size:11.5px;">Bind</span> class:
                 </li>
             </ul>
         </p>
         <ul><ul>
             <li>
-                The global variable <span style="font-family:monospace; font-size:10px;">
-                Setting</span> is assigned a class constructed using metaclass
-                <span style="font-family:monospace; font-size:10px;">SettingsMeta</span>, i.e.,
-                <span style="font-family:monospace; font-size:10px;">Setting</span> has
-                <span style="font-family:monospace; font-size:10px;">SettingsMeta</span> as its
-                metaclass and thereby inherits the <span style="font-family:monospace; font-size:10px;">
+                The global variable <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/config.py#L332">
+                Setting</a></span> is assigned a class constructed using metaclass
+                <span style="font-family:monospace; font-size:11.5px;">SettingsMeta</span>, i.e.,
+                <span style="font-family:monospace; font-size:11.5px;">Setting</span> has
+                <span style="font-family:monospace; font-size:11.5px;">SettingsMeta</span> as its
+                metaclass and thereby inherits the <span style="font-family:monospace; font-size:11.5px;">
                 __new__</span> special method. The built-in Python’s
-                <span style="font-family:monospace; font-size:10px;">type</span> function has similar
+                <span style="font-family:monospace; font-size:11.5px;">type</span> function has similar
                 usage. For more on metaclasses we refer the reader to the article on
                 <a href=https://realpython.com/python-metaclasses>Real python</a>.
             </li>
             <li>
-                When constructing the <span style="font-family:monospace; font-size:10px;">Bind</span>
-                class, <span style="font-family:monospace; font-size:10px;">SettigsMeta.__new__</span>
+                When constructing the <span style="font-family:monospace; font-size:11.5px;">Bind</span>
+                class, <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/config.py#L238">SettigsMeta.__new__</a></span>
                 special method is executed and populates the <span style="font-family:monospace;
-                font-size:10px;">attr</span> dictionary with an appropriate validator for Bind.
+                font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/config.py#L245">attr</a></span> dictionary with an appropriate validator for Bind.
             </li>
             <li>
-                Invokes <span style="font-family:monospace; font-size:10px;">__init__</span>
-                special method of the <span style="font-family:monospace; font-size:10px;">Setting
+                Invokes <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/config.py#L273">__init__</a></span>
+                special method of the <span style="font-family:monospace; font-size:11.5px;">Setting
                 </span> class to finalize the initialization after validating its default values.
             </li>
         </ul></ul>
@@ -374,24 +400,25 @@
 
         <h4>The run function thread resumed and proceeds as follows</h4>
         <p>
-            The <span style="font-family:monospace; font-size:10px;">WSGIApplication</span>
-            object is initialised by the method <span style="font-family:monospace; font-size:10px;">
-            BaseApplication.__init__</span> and executes as follows:
+            The <span style="font-family:monospace; font-size:11.5px;">WSGIApplication</span>
+            object is initialised by the method <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/app/base.py#L21">
+            BaseApplication.__init__</a></span> and executes as follows:
         </p>
         <ul>
             <li>
-                Sets up some attribute values, such as <span style="font-family:monospace; font-size:10px;">
-                self.usage</span> and <span style="font-family:monospace; font-size:10px;">
+                Sets up some attribute values, such as <span style="font-family:monospace; font-size:11.5px;">
+                self.usage</span> and <span style="font-family:monospace; font-size:11.5px;">
                 self.callable</span>.
             </li>
             <li>
-                Executes <span style="font-family:monospace; font-size:10px;">do_load_config</span>
-                method which in turn initialises <span style="font-family:monospace; font-size:10px;">
-                Config</span> class by calling <span style="font-family:monospace; font-size:10px;">
-                do_load_default_config</span> method.
+                Executes <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/app/base.py#L29">do_load_config</a></span>
+                method which in turn initialises <span style="font-family:monospace; font-size:11.5px;">
+                Config</span> class by calling <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/app/base.py#L41">
+                load_default_config</a></span> method.
             </li>
             <li>
-                <span style="font-family:monospace; font-size:10px;">Config.__init__</span>
+                <span style="font-family:monospace; font-size:11.5px;">
+                <a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/config.py#L48">Config.__init__</a></span>
                 initialisation method does the following:
                 <ul>
                     <li>
