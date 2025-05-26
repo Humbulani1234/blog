@@ -41,6 +41,7 @@
             font-size: 1.3em;
             color: black;
             margin-top: 1.6em;
+            margin-bottom: 1.6em;
         }
         h3 {
             font-size: 1em;
@@ -97,7 +98,7 @@
             word-break: break-all;     /* Break long words */
             overflow-x: auto;          /* Add horizontal scroll if needed */
             box-sizing: border-box;
-            font-size: 12px;
+            font-size: 14px;
             margin-bottom: 30px;
             margin-top: 25px;
         }
@@ -316,6 +317,7 @@
 
         <h2>The CLI, Configuration files and Environment variables - creating the Server state</h2>
         <b>The CLI</b>
+        <p style="margin-bottom: 1em;"></p>
         <p>A CLI is a user interface component for the application. It gives the user the power to
             request particular services, and, at times, even control how the application should
             behave while producing the requested output. We will explore how the Gunicorn
@@ -423,30 +425,30 @@
                 <ul>
                     <li>
                         While intialiazing its attributes it executes the function
-                        <span style="font-family:monospace; font-size:10px;">make_settings</span>
+                        <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/config.py#L28">make_settings</a></span>
                         which iterates through the list global variable <span style="font-family:monospace;
-                        font-size:10px;">KNOWN_SETTINGS</span>, and populates the dictionary local variable settings
+                        font-size:11.5px;">KNOWN_SETTINGS</span>, and populates the dictionary local variable settings
                         with each CLI option class instance or object; not with a class, but an object.
                     </li>
-                    <li>The settings dictionary has the value as the instance, and the name of the option as its key.</li>
+                    <li>The local variable <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/config.py#L29">settings</a></span> dictionary has as its value the option's class instance, and the name of the option as its key.</li>
                 </ul>
             </li>
-            <li>Proceeds to call the <span style="font-family:monospace; font-size:10px;">run</span>
-                method of <span style="font-family:monospace; font-size:10px;">WSGIApplication</span>
+            <li>Proceeds to call the <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/app/base.py#L201">run</a></span>
+                method of <span style="font-family:monospace; font-size:11.5px;">WSGIApplication</span>
                 object which does the following:
                 <ul>
                     <li>Checks some debugging options and displays messages accordingly.</li>
                     <li>If the user only requests to view the system configuration object, prints it
                         and exit.</li>
                     <li>Sets python paths and</li>
-                    <li>Calls <span style="font-family:monospace; font-size:10px;">run</span> method
-                        of <span style="font-family:monospace; font-size:10px;">BaseApplication</span>
+                    <li>Calls <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/app/base.py#L69">run</a></span> method
+                        of <span style="font-family:monospace; font-size:11.5px;">BaseApplication</span>
                         class which then proceeds as follows:
                         <ul>
-                            <li>Initialises the <span style="font-family:monospace; font-size:10px;">
-                                Arbiter</span> class and</li>
-                            <li>Executes <span style="font-family:monospace; font-size:10px;">
-                                Arbiter run</span> method - Thread paused, to be continued under
+                            <li>Initialises the <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/arbiter.py#L21">
+                                Arbiter</a></span> class and</li>
+                            <li>Executes <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/arbiter.py#L197">
+                                Arbiter.run</a></span> method - Thread paused, to be continued under
                                 the Arbiter section.</li>
                         </ul>
                     </li>
@@ -456,8 +458,8 @@
         <p>
             Please note that although we don’t discuss much of debugging and error handling, Gunicorn
             has been extensively written to accormodate them as evidenced by the usage of the
-            <span style="font-family:monospace; font-size:10px;">try...except statement</span>,
-            and CLI options like <span style="font-family:monospace; font-size:10px;">Spew</span>.
+            <span style="font-family:monospace; font-size:11.5px;"><a href="https://docs.python.org/3/reference/compound_stmts.html#the-try-statement">try...except</a></span> statement,
+            and CLI options like <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/config.py#L966">Spew</a></span>.
         </p>
         <div class="milestone">
             <b>Milestone</b>
