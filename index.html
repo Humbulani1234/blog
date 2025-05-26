@@ -21,7 +21,7 @@
             margin: 0;
             padding: 20px;
             text-align: left;
-            font-size: 0.85em;
+            font-size: 0.88em;
         }
         .container {
             width: 100%;
@@ -54,7 +54,7 @@
             /* color: black; */
             text-decoration: underline;
             font-weight: normal;
-            /*margin-bottom: 1em;*/
+            margin-bottom: 1.2em;
         }
         p {
             margin-bottom: 1em;
@@ -126,72 +126,72 @@
                 text-align:center;
         }
 
-                .footer .row{
+        .footer .row{
 
-                width:100%;
-                margin:1% 0%;
-                padding:0.6% 0%;
-                color:gray;
-                font-size:0.8em;
+        width:100%;
+        margin:1% 0%;
+        padding:0.6% 0%;
+        color:gray;
+        font-size:0.8em;
 
-                }
+        }
 
-                .footer .row a{
+        .footer .row a{
 
-                text-decoration:none;
-                /* color:gray; */
-                transition:0.5s;
+        text-decoration:none;
+        /* color:gray; */
+        transition:0.5s;
 
-                }
+        }
 
-                .footer .row a:hover{
+        .footer .row a:hover{
 
-                /* color:#fff; */
+        /* color:#fff; */
 
-                }
+        }
 
-                .footer .row ul{
+        .footer .row ul{
 
-                width:100%;
+        width:100%;
 
-                }
+        }
 
-                .footer .row ul li{
+        .footer .row ul li{
 
-                display:inline-block;
-                margin:0px 30px;
+        display:inline-block;
+        margin:0px 30px;
 
-                }
+        }
 
-                .footer .row a i{
+        .footer .row a i{
 
-                font-size:2em;
-                margin:0% 1%;
+        font-size:2em;
+        margin:0% 1%;
 
-                }
+        }
 
-                @media (max-width:1200px){
+        @media (max-width:1200px){
 
-                .footer{
+        .footer{
 
-                text-align:left;
-                padding:5%;
+        text-align:left;
+        padding:5%;
 
-                }
-                .footer .row ul li{
+        }
+        .footer .row ul li{
 
-                display:block;
-                margin:10px 0px;
-                text-align:left;
+        display:block;
+        margin:10px 0px;
+        text-align:left;
 
-                }
+        }
 
-                .footer .row a i{
+        .footer .row a i{
 
-                margin:0% 3%;
-                }
+        margin:0% 3%;
+        }
 
-                }
+        }
     </style>
 </head>
 <body>
@@ -215,7 +215,7 @@
     </nav>
     <div class="container">
         <h1><u>GUNICORN INTERNALS</u></h1>
-        <p style="color: gray;">May 24, 2025</p>
+        <p style="color: gray; margin-top: 1em;">May 24, 2025</p>
 
         <h2>Introduction</h2>
         <p>This document explores common software design components found in professional software
@@ -312,8 +312,8 @@
             </span> - Thread paused, to be resumed in the next section.
         </p>
         <div class="milestone">
-            <b style="margin-bottom:2em;">Milestone:</b>
-            <p>We have set the process in motion.</p>
+            <b>Milestone</b>
+            <p style="margin-top:1.5em;">We have set the process in motion.</p>
         </div>
         <hr>
 
@@ -395,7 +395,7 @@
         </p>
 
         <b>Configuration files and Environment variables</b>
-        <p>
+        <p style="margin-top:1.5em;">
            Configuration files and Environment variables are yet another form that provides users
            with control over an application, allowing them to specify how the system should behave.
            We explore the functionality responsible for processing and parsing configuration files and
@@ -465,7 +465,7 @@
         </p>
         <div class="milestone">
             <b>Milestone</b>
-            <p>
+            <p style="margin-top:1.5em;">
                 We have successfully constructed the server’s state and assign it to the
                self.settings WSGIApplication attribute. It reflects how the user has
                configured the application to suit his demands.
@@ -743,8 +743,8 @@
             </li>
         </ul>
         <div class="milestone">
-            <b style="margin-bottom:2em;">Milestone:</b>
-            <p>We have a server that consists of the master process and an arbitrarily number of worker
+            <b>Milestone</b>
+            <p style="margin-top:1.5em;">We have a server that consists of the master process and an arbitrarily number of worker
                 processes which are configured to handle the requests as per the user’s demands.
                 We demonstrated how the server receives a request and processes it to construct the
                 response in conjunction with the Django application; However, the details of parsing
@@ -863,7 +863,7 @@
         </ul>
         <div class="milestone">
             <b>Milestone</b>
-            <p>We have demonstrated how a request message is created and parsed.</p>
+            <p style="margin-top:1.5em;">We have demonstrated how a request message is created and parsed.</p>
         </div>
 
         <h3>Parsing examples</h3>
@@ -1001,8 +1001,8 @@
             </li>
         </ul>
         <div class="milestone">
-            <b>Milestone:</b>
-            <p>
+            <b>Milestone</b>
+            <p style="margin-top:1.5em;">
                 In this section we have sketched a brief description of how the Django-Gunicorn
                 interface works. In the next articles, we will expand from here and dive into the
                 internals of Django.
