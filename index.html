@@ -492,13 +492,14 @@
 
         <h2>Architectural design and Gunicorn processes - The Arbiter and Workers</h2>
         <p>
-           According to Gunicorn’s documentation, Gunicorn is designed as a master-slave architecture.
+           According to Gunicorn’s documentation, Gunicorn is designed as a <a href="https://docs.gunicorn.org/en/stable/design.html">master-slave</a> architecture.
            It has a master process called the Arbiter and can be configured with at least one worker
            processes - the slaves. Please refer to the documentation for a more detailed description
            including diagrams.
         </p>
 
         <b>The Arbiter</b>
+        <p style="margin-bottom: 1em;"></p>
         <p>
            The Arbiter is responsible for spawning new worker processes, receiving signals and managing
            the spawned worker processes.
@@ -508,26 +509,26 @@
         <p>
             <ul>
                 <li>
-                    The module <span style="font-family:monospace; font-size:10px;">arbiter</span> defines the
-                    class <span style="font-family:monospace; font-size:10px;">Arbiter</span> which represents
+                    The module <span style="font-family:monospace; font-size:11.5px;">arbiter</span> defines the
+                    class <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/arbiter.py#L21">Arbiter</a></span> which represents
                     the master process and defines functionality for managing worker processes.
                 </li>
                 <li>
-                    The module <span style="font-family:monospace; font-size:10px;">sock</span> defines
-                    the function <span style="font-family:monospace; font-size:10px;">create_sockets
+                    The module <span style="font-family:monospace; font-size:11.5px;">sock</span> defines
+                    the function <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/sock.py#L142">create_sockets</a>
                     </span> which creates sockets. Communication sockets are defined as
-                    subclasses of the base class <span style="font-family:monospace; font-size:10px;">
-                    BaseSocket</span>. The sockets includes: <span style="font-family:monospace;
-                    font-size:10px;">TCPSocket</span>, <span style="font-family:monospace; font-size:10px;">
-                    UnixSocket</span> and <span style="font-family:monospace; font-size:10px;">
-                    TCP6Socket</span> – also inherits from <span style="font-family:monospace; font-size:10px;">
+                    subclasses of the base class <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/sock.py#L16">
+                    BaseSocket</a></span>. The sockets includes: <span style="font-family:monospace;
+                    font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/sock.py#L74">TCPSocket</a></span>, <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/sock.py#L101">
+                    UnixSocket</a></span> and <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/sock.py#L92">
+                    TCP6Socket</a></span> – also inherits from <span style="font-family:monospace; font-size:11.5px;">
                     TCPSocket</span>.
                 </li>
                 <li>
-                    The module <span style="font-family:monospace; font-size:10px;">util</span> defines
-                    the function <span style="font-family:monospace; font-size:10px;">load_class</span>
-                    . The <span style="font-family:monospace; font-size:10px;">
-                    worker_class</span> property of <span style="font-family:monospace; font-size:10px;">
+                    The module <span style="font-family:monospace; font-size:11.5px;">util</span> defines
+                    the function <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/util.py#L68">load_class</a></span>
+                    . The <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/config.py#L115">
+                    worker_class</a></span> property of <span style="font-family:monospace; font-size:11.5px;">
                     Config</span> class uses this function to load the relevant Worker class. 
                     Worker classes are discussed in the next section.
                 </li>
@@ -535,74 +536,75 @@
         </p>
         <h4>Thread resumed</h4>
         <p>
-            <span style="font-family:monospace; font-size:10px;">Arbiter.__init__</span> initialisation
+            <span style="font-family:monospace; font-size:11.5px;">
+            <a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/arbiter.py#L197">Arbiter.__init__</a></span> initialisation
             method does the following:
         </p>
         <ul>
             <li>
-                Initialises various attributes such as <span style="font-family:monospace; font-size:10px;">
-                self.num_workers</span>, <span style="font-family:monospace; font-size:10px;">
-                self.worker_age</span> and <span style="font-family:monospace; font-size:10px;">
+                Initialises various attributes such as <span style="font-family:monospace; font-size:11.5px;">
+                self.num_workers</span>, <span style="font-family:monospace; font-size:11.5px;">
+                self.worker_age</span> and <span style="font-family:monospace; font-size:11.5px;">
                 self.pidfile</span>
             </li>
             <li>
-                Calls the method <span style="font-family:monospace; font-size:10px;">setup</span>
-                passing it the app argument - <span style="font-family:monospace; font-size:10px;">
+                Calls the method <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/arbiter.py#L88">setup</a></span>
+                passing it the app argument - <span style="font-family:monospace; font-size:11.5px;">
                 WSGIApplication</span>.
             </li>
         </ul>
-        <ul><p>The <span style="font-family:monospace; font-size:10px;">setup</span> method proceeds
+        <ul><p>The <span style="font-family:monospace; font-size:11.5px;">setup</span> method proceeds
             as follows:</p></ul>
         <ul>
             <li>
                 Extracts the config object from app and assigns it to <span style="font-family:monospace;
-            font-size:10px;">self.app</span> attribute
+            font-size:11.5px;">self.app</span> attribute
             </li>
             <li>
-                Using the property <span style="font-family:monospace; font-size:10px;">worker_class</span>
-                of <span style="font-family:monospace; font-size:10px;">Config</span> class and the
-                <span style="font-family:monospace; font-size:10px;">self.app_uri</span>, it imports the
-                correct Worker class. The attribute <span style="font-family:monospace; font-size:10px;">
+                Using the property <span style="font-family:monospace; font-size:11.5px;">worker_class</span>
+                of <span style="font-family:monospace; font-size:11.5px;">Config</span> class and the
+                <span style="font-family:monospace; font-size:11.5px;">self.app_uri</span>, it imports the
+                correct Worker class. The attribute <span style="font-family:monospace; font-size:11.5px;">
                 self.app_uri</span> will be discussed in the last section.
             </li>
             <li>Sets up the environment variables.</li>
-            <li>Proceeds and initialises <span style="font-family:monospace; font-size:10px;">
-                START_CTX</span> class variable.</li>
+            <li>Proceeds and initialises <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/arbiter.py#L73">
+                START_CTX</a></span> class variable.</li>
             <li>
-                Then <span style="font-family:monospace; font-size:10px;">BaseApplication run</span> method
-                executes the corresponding <span style="font-family:monospace; font-size:10px;">run</span>
-                method of the newly initialised <span style="font-family:monospace; font-size:10px;">
+                Then <span style="font-family:monospace; font-size:11.5px;">BaseApplication.run</span> method
+                executes the corresponding <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/arbiter.py#L197">run</a></span>
+                method of the newly initialised <span style="font-family:monospace; font-size:11.5px;">
                 Arbiter</span> class instance.
             </li>
         </ul>
-        <ul><p>The <span style="font-family:monospace; font-size:10px;">Arbiter.run</span> method proceeds
+        <ul><p>The <span style="font-family:monospace; font-size:11.5px;">Arbiter.run</span> method proceeds
             as follows:</p></ul>
         <ul>
             <li>This method acts as the Master main loop and uses the while statement to manage the workers
                 and listens for signals.</li>
-            <li>It executes the <span style="font-family:monospace; font-size:10px;">start</span> method
+            <li>It executes the <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/arbiter.py#L120">start</a></span> method
                 which proceeds as follows:
                 <ul>
                     <li>
                         The main objective of this method is to create listeners - the workers – by calling
-                        <span style="font-family:monospace; font-size:10px;">create_sockets</span> function
+                        <span style="font-family:monospace; font-size:11.5px;">create_sockets</span> function
                         which is detailed above.
                     </li>
                     <li>
-                        It then executes the <span style="font-family:monospace; font-size:10px;">
-                        manage_workers</span> method which primarily performs checks and invokes
-                        <span style="font-family:monospace; font-size:10px;">spawn_worker</span> method.
+                        It then executes method <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/arbiter.py#L566">
+                        manage_workers</a></span> which primarily performs checks and invokes method
+                        <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/arbiter.py#L588">spawn_worker</a></span>.
                     </li>
                 </ul>
             </li>
-            <ul>Method <span style="font-family:monospace; font-size:10px;">spawn_worker</span> in turn proceeds
+            <ul>Method <span style="font-family:monospace; font-size:11.5px;">spawn_worker</span> in turn proceeds
                 as follows:
                 <ul>
-                    <li>Utilizing <span style="font-family:monospace; font-size:10px;">
+                    <li>Utilizing <span style="font-family:monospace; font-size:11.5px;">
                         self.worker_class</span> attribute, it initialises the corresponding Worker
                         process instance by invoking special method <span style="font-family:monospace;
-                        font-size:10px;">Worker.__init__</span>, which then calls
-                        <span style="font-family:monospace; font-size:10px;">init_process</span>
+                        font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/workers/base.py#L38">Worker.__init__</a></span>, which then calls
+                        <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/workers/base.py#L86">init_process</a></span>
                         method of the newly initialised worker instance.
                     </li>
                 </ul>
@@ -611,6 +613,7 @@
         <p>Thread paused, continues in the next section.</p>
 
         <b>Worker processes:</b>
+        <p style="margin-bottom: 1em;"></p>
         <p>
            Worker processes handle the heavy load of processing client’s request and sending off
            appropriate responses. Workers are processes, not threads - Gunicorn design choice;
@@ -620,7 +623,7 @@
 
         <h4>Data structures</h4>
         <p>
-            The package <span style="font-family:monospace; font-size:10px;">gunicorn.workers</span>
+            The package <span style="font-family:monospace; font-size:11.5px;">gunicorn.workers</span>
             defines the classes and various functionality. Class design is based on inheritance.
             Worker subclasses are models that represent different computational design choices, i.e.,
             they can be configured as synchronous or asynchronous, whether to use threads or not given
@@ -628,102 +631,107 @@
         </p>
         <ul>
             <li>
-                The module <span style="font-family:monospace; font-size:10px;">workers.base</span>
-                defines the base class <span style="font-family:monospace; font-size:10px;">
-                Worker</span> which worker subclasses inherit from, it is mostly responsible for the
+                The module <span style="font-family:monospace; font-size:11.5px;">workers.base</span>
+                defines the base class <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/workers/base.py#L30">
+                Worker</a></span> which worker subclasses inherit from, it is mostly responsible for the
                 initialisation of subclasses and defines the <span style="font-family:monospace;
-                font-size:10px;">run</span> method which must be overridden.
+                font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/workers/base.py#L78">run</a></span> method which must be overridden.
             </li>
             <li>
-                The module <span style="font-family:monospace; font-size:10px;">workers.sync</span> defines
-                the <span style="font-family:monospace; font-size:10px;">SyncWorker</span> class for synchronous
+                The module <span style="font-family:monospace; font-size:11.5px;">workers.sync</span> defines
+                the <span style="font-family:monospace; font-size:11.5px;">
+                <a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/workers/sync.py#L25">SyncWorker</a></span> class for synchronous
                 execution
             </li>
             <li>
-                The module <span style="font-family:monospace; font-size:10px;">workers.gthread</span> defines
-                the <span style="font-family:monospace; font-size:10px;">ThreadWorker</span> class for
+                The module <span style="font-family:monospace; font-size:11.5px;">workers.gthread</span> defines
+                the <span style="font-family:monospace; font-size:11.5px;">
+                <a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/workers/gthread.py#L68">ThreadWorker</a></span> class for
                 thread support in a worker process.
             </li>
             <li>
-                The module <span style="font-family:monospace; font-size:10px;">workers.ggevent</span> defines
-                <span style="font-family:monospace; font-size:10px;">GeventWorker</span> class.
-                Please refer to the documentation for more on this model design choice.
+                The module <span style="font-family:monospace; font-size:11.5px;">workers.ggevent</span> defines
+                <span style="font-family:monospace; font-size:11.5px;">
+                <a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/workers/ggevent.py#L32">GeventWorker</a></span> class.
+                Please refer to the <a href="https://www.gevent.org/contents.html">documentation</a> for more on this model design choice.
             </li>
            <li>The package also offers other design choices for the worker processes, such as gtornado
-               and geventlet - refer to the documentations of gtornado and geventlet for more on these
+               and geventlet - refer to the documentations of <a href="https://www.tornadoweb.org/en/stable/">gtornado</a> and <a href="https://eventlet.readthedocs.io/en/latest/">geventlet</a> for more on these
                frameworks.
             </li>
             <li>
-                The module <span style="font-family:monospace; font-size:10px;">wsgi</span> defines
-                the function <span style="font-family:monospace; font-size:10px;">create</span> which
+                The module <span style="font-family:monospace; font-size:11.5px;">wsgi</span> defines
+                the function <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/http/wsgi.py#L110">create</a></span> which
                 is responsible for creating a WSGI environment, and a Response object. These objects
                 - WSGI environment and Response object - are used as arguments to the special method
-                <span style="font-family:monospace; font-size:10px;">WSGIHandler.__call__</span>
+                <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/django/django/blob/main/django/core/handlers/wsgi.py#L120">WSGIHandler.__call__</a></span>
                 for Gunicorn-Django interface [More on this in the last section].
                 To create the WSGI environment the function uses the <span style="font-family:monospace;
-                font-size:10px;">base_environ</span> and <span style="font-family:monospace; font-size:10px;">
-                default_environ</span> functions, also defined in the module.
+                font-size:11.5px;"><a href="https://github.com/django/django/blob/main/django/core/handlers/wsgi.py#L69">base_environ</a></span> and <span style="font-family:monospace; font-size:10px;"><a href="https://github.com/django/django/blob/main/django/core/handlers/wsgi.py#L82">
+                default_environ</a></span> functions, also defined in the module.
             </li>
         </ul>
 
         <h4>Thread resumes</h4>
-        <p><span style="font-family:monospace; font-size:10px;">Worker.init_process</span> special
+        <p><span style="font-family:monospace; font-size:11.5px;">
+        <a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/workers/base.py#L86">Worker.init_process</a></span> special
             method is called and executes as follows:</p>
         <ul>
             <li>Sets up pipes data structure</li>
-            <li>Initialises signals by calling <span style="font-family:monospace; font-size:10px;">
-                init_signal</span> method.</li>
-            <li>Loads the <span style="font-family:monospace; font-size:10px;">WSGIHandler</span>
+            <li>Initialises signals by calling <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/workers/base.py#L168">
+                init_signal</a></span> method.</li>
+            <li>Loads the <span style="font-family:monospace; font-size:11.5px;">WSGIHandler</span>
                 object and assigns it to the worker attribute <span style="font-family:monospace;
-                font-size:10px;">self.wsgi</span>.</li>
-            <li>Executes the <span style="font-family:monospace; font-size:10px;">run</span> method of the
+                font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/workers/base.py#L147">self.wsgi</a></span>.</li>
+            <li>Executes the <span style="font-family:monospace; font-size:11.5px;">
+            <a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/workers/sync.py#L112">run</a></span> method of the
                 relevant Worker subclass which in our case is the: <span style="font-family:monospace;
-                font-size:10px;">SyncWorker</span>.</li>
+                font-size:11.5px;">SyncWorker</span>.</li>
         </ul>
-        <p>The <span style="font-family:monospace; font-size:10px;">SyncWorker.run</span> method proceeds
+        <p>The <span style="font-family:monospace; font-size:11.5px;">SyncWorker.run</span> method proceeds
             as follows:</p>
         <ul>
-            <li>Executes <span style="font-family:monospace; font-size:10px;">run_for_one</span> method
+            <li>Executes <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/workers/sync.py#L59">run_for_one</a></span> method
                 which in turn proceeds as follows:
                 <ul>
                     <li>Runs a while loop and executes the method <span style="font-family:monospace;
-                    font-size:10px;">accept</span> which in turn executes the method
-                    <span style="font-family:monospace; font-size:10px;">handle</span>.</li>
+                    font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/workers/sync.py#L27">accept</a></span> which in turn executes the method
+                    <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/workers/sync.py#L127">handle</a></span>.</li>
                 </ul>
             </li>
-            <li>The method <span style="font-family:monospace; font-size:10px;">handle</span> proceeds
+            <li>The method <span style="font-family:monospace; font-size:11.5px;">handle</span> proceeds
                 as follows:
                 <ul>
-                    <li>Constructs the <span style="font-family:monospace; font-size:10px;">
-                        RequestParser</span> instance.</li>
+                    <li>Constructs the <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/http/parser.py#L49">
+                        RequestParser</a></span> instance.</li>
                     <li>Iterate over the instance, returns a <span style="font-family:monospace;
-                        font-size:10px;">self.msg</span> object [We expand on this in the next section]
-                        and calls <span style="font-family:monospace; font-size:10px;">handle_request</span>
+                        font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/http/parser.py#L41">self.msg</a></span> object [We expand on this in the next section]
+                        and calls <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/workers/sync.py#L161">handle_request</a></span>
                         method which then proceeds as follows:
                         <ul>
-                            <li>Calls <span style="font-family:monospace; font-size:10px;">create</span> function
-                                which executes and returns a <span style="font-family:monospace; font-size:10px;">
-                                resp (Response)</span> and <span style="font-family:monospace; font-size:10px;">
+                            <li>Calls <span style="font-family:monospace; font-size:11.5px;">create</span> function
+                                which executes and returns a <span style="font-family:monospace; font-size:11.5px;">
+                                resp (Response)</span> and <span style="font-family:monospace; font-size:11.5px;">
                                 environ (WSGI environment)</span> objects as detailed above.
                             </li>
-                            <li>Then proceeds and calls the <span style="font-family:monospace; font-size:10px;">
+                            <li>Then proceeds and calls the <span style="font-family:monospace; font-size:11.5px;">
                                 self.wsgi</span> application instance - <span style="font-family:monospace;
-                                font-size:10px;">WSGIHandler</span>. Paused, this will be expanded on in the relevant
+                                font-size:11.5px;">WSGIHandler</span>. Paused, this will be expanded on in the relevant
                                 section - Django-Gunicorn interface.
                             </li>
                         </ul>
                     </li>
-                    <li>Utilizing the returned <span style="font-family:monospace; font-size:10px;">resp
+                    <li>Utilizing the returned <span style="font-family:monospace; font-size:11.5px;">resp
                     </span>, the Response object, the function then continues and write a
-                    <span style="font-family:monospace; font-size:10px;">respiter</span>, iterator
+                    <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/workers/sync.py#L177">respiter</a></span>, iterator
                     object, message to create the client’s response using the
-                    <span style="font-family:monospace; font-size:10px;">write_file</span> method which
+                    <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/http/wsgi.py#L392">write_file</a></span> method which
                     proceeds as follows:
                         <ul>
-                            <li><span style="font-family:monospace; font-size:10px;">resp</span> is a
-                                Response object and <span style="font-family:monospace; font-size:10px;">
+                            <li><span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/http/wsgi.py#L200">resp</a></span> is a
+                                Response object and <span style="font-family:monospace; font-size:11.5px;">
                                 write_file</span> is invoked to write the data stored in the iterator
-                                <span style="font-family:monospace; font-size:10px;">respiter</span> to
+                                <span style="font-family:monospace; font-size:11.5px;">respiter</span> to
                                 create the client’s response object, and the data is obtained from the
                                 Django application.
                             </li>
