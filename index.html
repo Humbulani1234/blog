@@ -47,12 +47,14 @@
             font-size: 1em;
             /* color: black; */
             text-decoration: underline;
+            margin-bottom: 1.5em;
         }
         h4 {
             font-size: 1em;
             /* color: black; */
             text-decoration: underline;
             font-weight: normal;
+            /*margin-bottom: 1em;*/
         }
         p {
             margin-bottom: 1em;
@@ -310,7 +312,7 @@
             </span> - Thread paused, to be resumed in the next section.
         </p>
         <div class="milestone">
-            <b>Milestone:</b>
+            <b style="margin-bottom:2em;">Milestone:</b>
             <p>We have set the process in motion.</p>
         </div>
         <hr>
@@ -741,7 +743,7 @@
             </li>
         </ul>
         <div class="milestone">
-            <b>Milestone:</b>
+            <b style="margin-bottom:2em;">Milestone:</b>
             <p>We have a server that consists of the master process and an arbitrarily number of worker
                 processes which are configured to handle the requests as per the user’s demands.
                 We demonstrated how the server receives a request and processes it to construct the
@@ -757,6 +759,7 @@
             facilitate communication. Networking, a form of communication, is a vast topic and it
             includes standardised models like the <a href="https://www.iso.org/ics/35.100/x/">OSI</a>
             model, where HTTP serves as one of the communications protocol at the Application layer.
+            <p></p>
             In this section we will describe the
             data structures used to represent the sent HTTP messages (requests) and received messages
             (responses). We will also discuss the structures that represent the Parser, and how raw
@@ -766,46 +769,46 @@
         <h4>Data structures</h4>
         <p>
             <ul>
-                <li>The module <span style="font-family:monospace; font-size:10px;">http.body</span>
-                    defines the class <span style="font-family:monospace; font-size:10px;">Body</span>
+                <li>The module <span style="font-family:monospace; font-size:11.5px;">http.body</span>
+                    defines the class <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/http/body.py#L183">Body</a></span>
                     which represents an HTTP message’s body. It also defines classes that represent
-                    different approaches for reading the message’s body, i.e.,
-                    <span style="font-family:monospace; font-size:10px;">
-                    LengthReader</span>. <span style="font-family:monospace; font-size:10px;">
-                    Body</span>and message reader classes have a “has a” relationship established
+                    different approaches of reading the message’s body, i.e.,
+                    <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/http/body.py#L115">
+                    LengthReader</a></span>. <span style="font-family:monospace; font-size:11.5px;">
+                    Body</span> and message reader classes have a “has a” relationship established
                     through the attribute reader of <span style="font-family:monospace;
-                    font-size:10px;">Body</span>. 
+                    font-size:11.5px;">Body</span>. 
                 </li>
                 <li>
-                    The module <span style="font-family:monospace; font-size:10px;">http.message
-                    </span> defines the class <span style="font-family:monospace; font-size:10px;">
-                    Message</span> which represents the HTTP message and it has a “has-a” relationship
-                    with the <span style="font-family:monospace; font-size:10px;">Body</span> class
+                    The module <span style="font-family:monospace; font-size:11.5px;">http.message
+                    </span> defines the class <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/http/message.py#L33">
+                    Message</a></span> which represents the HTTP message and it has a “has-a” relationship
+                    with the <span style="font-family:monospace; font-size:11.5px;">Body</span> class
                     described above.
                 </li>
                 <li>
-                    The module <span style="font-family:monospace; font-size:10px;">http.wsgi</span>
-                    defines the <span style="font-family:monospace; font-size:10px;">Request</span>
-                    object which is a <span style="font-family:monospace; font-size:10px;">
+                    The module <span style="font-family:monospace; font-size:11.5px;">http.message</span>
+                    defines the <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/http/message.py#L243">Request</a></span>
+                    object which is a <span style="font-family:monospace; font-size:11.5px;">
                     Message</span> subclass and implements a <span style="font-family:monospace;
-                    font-size:10px;">parse</span> method.
+                    font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/http/message.py#L269">parse</a></span> method.
                 </li>
                 <li>
-                    The module <span style="font-family:monospace; font-size:10px;">http.unreader
+                    The module <span style="font-family:monospace; font-size:11.5px;">http.unreader
                     </span> defines data structures related to reading sockets. It defines the class
-                    <span style="font-family:monospace; font-size:10px;">Unreader</span> as a base
-                    class and subclasses such as: <span style="font-family:monospace; font-size:10px;">
-                    SocketUnreader</span>. The <span style="font-family:monospace; font-size:10px;">
+                    <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/http/unreader.py#L12">Unreader</a></span> as a base
+                    class and subclasses such as: <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/http/unreader.py#L56">
+                    SocketUnreader</a></span>. <span style="font-family:monospace; font-size:11.5px;">
                     SocketUnreader</span> uses sockets to read and write messages.
                 </li>
                 <li>
-                    The module <span style="font-family:monospace; font-size:10px;">http.parser</span>
-                    defines the base class <span style="font-family:monospace; font-size:10px;">
-                    Parser</span> and its subclass <span style="font-family:monospace; font-size:10px;">
-                    RequestParser</span>. <span style="font-family:monospace; font-size:10px;">
-                    RequestParser</span> has a <span style="font-family:monospace; font-size:10px;">
+                    The module <span style="font-family:monospace; font-size:11.5px;">http.parser</span>
+                    defines the base class <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/http/parser.py#L9">
+                    Parser</a></span> and its subclass <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/http/parser.py#L49">
+                    RequestParser</a></span>. <span style="font-family:monospace; font-size:11.5px;">
+                    RequestParser</span> has a <span style="font-family:monospace; font-size:11.5px;">
                     Request</span> class variable creating a “has-a” relationship between them.
-                    The function <span style="font-family:monospace; font-size:10px;">create</span>
+                    The function <span style="font-family:monospace; font-size:11.5px;">create</span>
                     when executed returns objects that are passed to a Django callable -
                     Gunicorn-Django interface. It was examined in the previous section.
                 </li>
@@ -815,43 +818,43 @@
         <h4>A discussion on request processing and parsing</h4>
         <p> 
             Working with the Request object involves the method <span style="font-family:monospace;
-            font-size:10px;">__next__</span> of <span style="font-family:monospace; font-size:10px;">
+            font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/http/parser.py#L28">__next__</a></span> of <span style="font-family:monospace; font-size:11.5px;">
             RequestParser</span> instance and it proceeds as follows:
        </p>
         <ul>
             <li>First, checks if there still data in the message object to be discarded</li>
             <li>Then proceeds to initialise a new message object with the special method
-                <span style="font-family:monospace; font-size:10px;">Message.__init__</span>, and it
+                <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/http/message.py#L34">Message.__init__</a></span>, and
                 proceeds as follows:
                 <ul>
                     <li>Sets various attributes including the unreader object</li>
                     <li>Proceeds to set limits on header size and maximum buffer sizes</li>
-                    <li>Calls the method <span style="font-family:monospace; font-size:10px;">parse
+                    <li>Calls the method <span style="font-family:monospace; font-size:11.5px;">parse
                         </span> which parses the HTTP message object, it proceeds as follows:
                         <ul>
                             <li>
-                                Calls <span style="font-family:monospace; font-size:10px;">
-                                get_data</span> method which uses the socket API to read the and
+                                Calls <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/http/message.py#L261">
+                                get_data</a></span> method which uses the socket API to read the and
                                 write data from sockets. For more please refer to the socket Python
                                 documentation
                             </li>
                             <li>
-                                Calls the method <span style="font-family:monospace; font-size:10px;">
-                                parse_headers</span> to parse the message headers and assign them to
-                                <span style="font-family:monospace; font-size:10px;">self.headers
+                                Calls the method <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/http/message.py#L70">
+                                parse_headers</a></span> to parse the message headers and assign them to
+                                <span style="font-family:monospace; font-size:11.5px;">self.headers
                                 </span> attribute.
                             </li>
                         </ul>
                     </li>
-                    <li>Call the method <span style="font-family:monospace; font-size:10px;">
-                        set_body_reader</span> which does the following:
+                    <li>Call the method <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/http/message.py#L169">
+                        set_body_reader</a></span> which does the following:
                         <ul>
                             <li>Performs checks on the headers in order to raise appropriate errors.</li>
                             <li>
                                 Depending on content_length or if the message is chunked set the
-                                appropriate instance of <span style="font-family:monospace; font-size:10px;">
+                                appropriate instance of <span style="font-family:monospace; font-size:11.5px;">
                                 Body</span> class and assign it to <span style="font-family:monospace;
-                                font-size:10px;">self.body</span> attribute.
+                                font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/http/message.py#L42">self.body</a></span> attribute.
                             </li>
                         </ul>
                     </li>
@@ -928,73 +931,72 @@
         <p>
             In this section we sketch out a brief description of how Django and Gunicorn interface.
             Looking back again at our command executed by the shell, the argument
-            <span style="font-family:monospace; font-size:10px;">django_ref.wsgi:application</span>
-            links to a Django file: <span style="font-family:monospace; font-size:10px;">
-            django_ref.wsgi</span>. The function <span style="font-family:monospace; font-size:10px;">
-            get_wsgi_application</span> assigned to the application global variable initialises
-            the <span style="font-family:monospace; font-size:10px;">WSGIHandler</span>.
+            <span style="font-family:monospace; font-size:11.5px;">django_ref.wsgi:application</span>
+            links to a Django file: <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/Humbulani1234/django-default/blob/main/django_ref/wsgi.py">
+            django_ref.wsgi</a></span>. The function <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/django/django/blob/main/django/core/wsgi.py#L5">
+            get_wsgi_application</a></span> assigned to the application global variable initialises
+            the <span style="font-family:monospace; font-size:11.5px;">WSGIHandler</span>.
         </p>
 
         <h4>Data structures</h4>
         <p>
             <ul>
                 <li>
-                    The module <span style="font-family:monospace; font-size:10px;">
+                    The module <span style="font-family:monospace; font-size:11.5px;">
                     django.core.handlers.wsgi</span> defines the class
-                    <span style="font-family:monospace; font-size:10px;">WSGIRequest</span> which
+                    <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/django/django/blob/main/django/core/handlers/wsgi.py#L56">WSGIRequest</a></span> which
                     inherits from Django Request class. It also defines the class
-                    <span style="font-family:monospace; font-size:10px;">WSGIHandler</span> that has
-                    a <span style="font-family:monospace; font-size:10px;">WSGIRequest</span> class
+                    <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/django/django/blob/main/django/core/handlers/wsgi.py#L113">WSGIHandler</a></span> that has
+                    a <span style="font-family:monospace; font-size:11.5px;">WSGIRequest</span> class
                     as its class variable. It creates the famous request parameter of Django’s view
-                    functions. We also note that the <span style="font-family:monospace; font-size:10px;">
+                    functions. We also note that the <span style="font-family:monospace; font-size:11.5px;">
                     WSGIHandler</span> defines the special method
-                    <span style="font-family:monospace; font-size:10px;">__call__</span> as part of the
+                    <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/django/django/blob/main/django/core/handlers/wsgi.py#L120">__call__</a></span> as part of the
                     Django-Gunicorn interface specification.
                 </li>
             </ul>    
         </p>
 
         <h4>Creating application URI</h4>
-        <p>The method <span style="font-family:monospace; font-size:10px;">init</span> of
+        <p>The method <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/app/wsgiapp.py#L13">init</a></span> of
             Application when executed proceeds as follows:</p>
         <ul>
             <li>
                 It checks the argument len if it’s greater than 1 and then extracts out the
-                <span style="font-family:monospace; font-size:10px;">django_ref</span> argument and
-                assign it to the <span style="font-family:monospace; font-size:10px;">app_uri</span>
+                <span style="font-family:monospace; font-size:11.5px;">django_ref</span> argument and
+                assign it to the <span style="font-family:monospace; font-size:11.5px;">app_uri</span>
                 attribute.
             </li>
         </ul>
         <h4>WSGIHandler object</h4>
         <p>
-            The <span style="font-family:monospace; font-size:10px;">load_wsgi</span> method of Worker
-            assigns the <span style="font-family:monospace; font-size:10px;">WSGIHandler</span> instance
-            to <span style="font-family:monospace; font-size:10px;">self.wsgi</span> attribute of the
+            The <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/workers/base.py#L145">load_wsgi</a></span> method of Worker
+            assigns the <span style="font-family:monospace; font-size:11.5px;">WSGIHandler</span> instance
+            to <span style="font-family:monospace; font-size:11.5px;">self.wsgi</span> attribute of the
             configured Worker subclass. The method proceeds as follows:
         </p>
         <ul>
             <li>
-                It calls the <span style="font-family:monospace; font-size:10px;">wsgi</span> method of
-                <span style="font-family:monospace; font-size:10px;">self.app</span>, Application object,
-                which then calls the method <span style="font-family:monospace; font-size:10px;">
-                load_wsgiapp</span> which in turn calls the <span style="font-family:monospace;
-                font-size:10px;">import_app</span> function from
-                <span style="font-family:monospace; font-size:10px;">util</span> module.
+                It calls the <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/app/base.py#L64">wsgi</a></span> method of
+                <span style="font-family:monospace; font-size:11.5px;">self.app</span>, Application object,
+                which then calls the method <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/app/wsgiapp.py#L46">
+                load_wsgiapp</a></span> which in turn calls the <span style="font-family:monospace;
+                font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/util.py#L358">import_app</a></span> function from
+                <span style="font-family:monospace; font-size:11.5px;">util</span> module.
             </li>
         </ul>
         <p>
-             loading of <span style="font-family:monospace; font-size:10px;">WSGIHandler</span>
-            and assigned to <span style="font-family:monospace; font-size:10px;">self.wsgi</span>, it
-            is called in the method <span style="font-family:monospace; font-size:10px;">handle_request
-            </span> of Worker class, and proceeds as follows:
+            After loading of the <span style="font-family:monospace; font-size:11.5px;">WSGIHandler</span>
+            and assigned to <span style="font-family:monospace; font-size:11.5px;">self.wsgi</span>, it
+            is then invoked by the method <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/workers/sync.py#L161">handle_request</a></span> of Worker class, and proceeds as follows:
         </p>
         <ul>
             <li>
-                The method <span style="font-family:monospace; font-size:10px;">__call__</span> of
-                <span style="font-family:monospace; font-size:10px;">WSGIHandler</span> is invoked
-                and passed the arguments <span style="font-family:monospace; font-size:10px;">
-                environ</span> and <span style="font-family:monospace; font-size:10px;">
-                resp.start_response</span> - We have now reached the inside of Django processing
+                The method <span style="font-family:monospace; font-size:11.5px;">__call__</span> of
+                <span style="font-family:monospace; font-size:11.5px;">WSGIHandler</span> is invoked
+                and passed the arguments <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/workers/sync.py#L167">
+                environ</a></span> and <span style="font-family:monospace; font-size:11.5px;"><a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/workers/sync.py#L167">
+                resp.start_response</a></span> - We have now reached the inside of Django processing
                 the WSGI request and creating the response.
             </li>
         </ul>
@@ -1013,11 +1015,8 @@
           <div class="footer">
             <div class="row">
                 <ul>
-                    <li><a href="#"><i class="fa-brands fa-linkedin"></i></a></li>
-                    <li><a href="#"><i class="fa-brands fa-github"></i></a></li>
-                    <!-- <li><a href="#"><i class="fa-brands fa-linkedin"></i></a></li> -->
-                    <!-- <li><a href="{% url 'about' %}">About</a></li> -->
-                    <!-- <li><a href="#">Services</a></li> -->
+                    <li><a href="https://www.linkedin.com/in/humbulanimndou/"><i class="fa-brands fa-linkedin"></i></a></li>
+                    <li><a href="https://github.com/Humbulani1234"><i class="fa-brands fa-github"></i></a></li>
                 </ul>
             </div>
           </div>
