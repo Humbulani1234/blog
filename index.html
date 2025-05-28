@@ -118,55 +118,52 @@
             font-family: monospace;
             font-size: 14px;
         }
+        .index {
+            /* border: 2px solid; Dark blue border */
+            background-color: whitesmoke; /* Light blue background */
+            padding: 15px;
+            margin: 3em 0;
+            /* font-weight: bold; */
+            font-family: monospace;
+            font-size: 14px;
+        }
         .footer{
-                margin-top: 20%;
-                background:whitesmoke;
-                padding:30px 0px;
-                font-family: 'Play', sans-serif;
-                text-align:center;
+            margin-top: 20%;
+            background:whitesmoke;
+            padding:30px 0px;
+            font-family: 'Play', sans-serif;
+            text-align:center;
         }
-
         .footer .row{
-
-        width:100%;
-        margin:1% 0%;
-        padding:0.6% 0%;
-        color:gray;
-        font-size:0.8em;
-
+            width:100%;
+            margin:1% 0%;
+            padding:0.6% 0%;
+            color:gray;
+            font-size:0.8em;
         }
-
         .footer .row a{
-
-        text-decoration:none;
-        /* color:gray; */
-        transition:0.5s;
-
-        }
-
-        .footer .row a:hover{
-
-        /* color:#fff; */
-
+            text-decoration:none;
+            /* color:gray; */
+            transition:0.5s;
         }
 
         .footer .row ul{
 
-        width:100%;
+            width:100%;
 
         }
 
         .footer .row ul li{
 
-        display:inline-block;
-        margin:0px 30px;
+            display:inline-block;
+            margin:0px 30px;
 
         }
 
         .footer .row a i{
 
-        font-size:2em;
-        margin:0% 1%;
+            font-size:2em;
+            margin:0% 1%;
 
         }
 
@@ -217,7 +214,23 @@
         <h1><u>GUNICORN INTERNALS</u></h1>
         <p style="color: gray; margin-top: 1em;">May 24, 2025</p>
 
-        <h2>Introduction</h2>
+        <div class="index">
+            <b>Index</b>
+            <p style="margin-bottom: 0.9em;"></p>
+           <ul>
+              <li><a href="#Introduction">Introduction</a></li>
+              <li><a href="#CLI and Conf">The CLI, Configuration files and Environment variables
+                - creating the Server state</a>
+              </li>
+              <li><a href="#Architectural">Architectural design and Gunicorn processes - The Arbiter
+                and Workers</a>
+              </li>
+              <li><a href="#Parsing">HTTP messages and Parsing</a></li>
+              <li><a href="#Interface">Django-Gunicorn Interface</a></li>
+            </ul>
+        </div>
+
+        <h2 id="Introduction">Introduction</h2>
         <p>This document explores common software design components found in professional software
            products by providing a technical case study of how Gunicorn server works.
            Modern software systems are typically built on foundational systems,
@@ -317,7 +330,8 @@
         </div>
         <hr>
 
-        <h2>The CLI, Configuration files and Environment variables - creating the Server state</h2>
+        <h2 id="CLI and Conf">The CLI, Configuration files and Environment variables - creating the Server
+            state</h2>
         <b>The CLI</b>
         <p style="margin-bottom: 1em;"></p>
         <p>A CLI is a user interface component for the application. It gives the user the power to
@@ -492,7 +506,7 @@
         </p>
         <hr  style="margin-top: 30px;">
 
-        <h2>Architectural design and Gunicorn processes - The Arbiter and Workers</h2>
+        <h2 id="Architectural">Architectural design and Gunicorn processes - The Arbiter and Workers</h2>
         <p>
            According to Gunicorn’s documentation, Gunicorn is designed as a <a href="https://docs.gunicorn.org/en/stable/design.html">master-slave</a> architecture.
            It has a master process called the Arbiter and can be configured with at least one worker
@@ -752,7 +766,7 @@
             </p>
         </div>
         <hr>
-        <h2>HTTP messages and Parsing</h2>
+        <h2 id="Parsing">HTTP messages and Parsing</h2>
         <p>
             Communication between processes is at the heart of modern internet; after all, a server and
             a client are merely processes running on a computer with a well-defined protocol to
@@ -927,7 +941,7 @@
             </pre>
         </div>
         <hr>
-        <h2>Django-Gunicorn interface</h2>
+        <h2 id="Interface">Django-Gunicorn interface</h2>
         <p>
             In this section we sketch out a brief description of how Django and Gunicorn interface.
             Looking back again at our command executed by the shell, the argument
