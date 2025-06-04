@@ -201,7 +201,7 @@ ul {
 }
 
 .featured-posts h2, .recent-posts h2 {
-    font-size: 1.8em;
+    font-size: 1.2em;
     margin-bottom: 20px;
     color: #222;
     border-bottom: 2px solid #007bff;
@@ -333,7 +333,6 @@ ul {
     font-size: 0.9em;
 }
 
-
 /* Comments Section Styling */
 .comments-section {
     margin-top: 50px;
@@ -342,10 +341,9 @@ ul {
 }
 
 .comments-section h2 {
-    font-size: 1.8em;
+    font-size: 1.2em;
     margin-bottom: 25px;
     color: #222;
-    text-align: center;
 }
 
 .comment-form-container {
@@ -666,4 +664,9 @@ pre {
 .mybtn:hover {
     background-color: floralwhite;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+}
+.caption {
+    font-style: italic;
+    color: #555;
+    margin-top: 10px;
 }
